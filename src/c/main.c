@@ -6,8 +6,7 @@ static TextLayer *s_time_layer;
 
 static bool s_bt_connected;
 static BatteryChargeState s_battery_state;
-static int32_t s_steps = 0;
-static char s_steps_buf[10] = "0";
+static char s_date_buf[16] = "";
 
 // ── Drawing helpers ──────────────────────────────────────────────────────────
 
@@ -24,21 +23,21 @@ static void draw_bt_icon(GContext *ctx, GRect r)
   if (s_bt_connected)
   {
     graphics_context_set_stroke_color(ctx, GColorWhite);
-    graphics_context_set_stroke_width(ctx, 2);
+    graphics_context_set_stroke_width(ctx, 1);
     // Vertical staff
     graphics_draw_line(ctx, GPoint(cx, y0), GPoint(cx, y1));
     // Upper right lobe
     graphics_draw_line(ctx, GPoint(cx, y0), GPoint(cx + arm, q1));
-    graphics_draw_line(ctx, GPoint(cx + arm, q1), GPoint(cx, mid));
+    graphics_draw_line(ctx, GPoint(cx + arm, q1), GPoint(cx - 2, mid + 2));
     // Lower right lobe
-    graphics_draw_line(ctx, GPoint(cx, mid), GPoint(cx + arm, q3));
+    graphics_draw_line(ctx, GPoint(cx - 2, mid - 2), GPoint(cx + arm, q3));
     graphics_draw_line(ctx, GPoint(cx + arm, q3), GPoint(cx, y1));
   }
   else
   {
     // Red X
     graphics_context_set_stroke_color(ctx, GColorRed);
-    graphics_context_set_stroke_width(ctx, 3);
+    graphics_context_set_stroke_width(ctx, 2);
     graphics_draw_line(ctx,
                        GPoint(r.origin.x + 2, r.origin.y + 2),
                        GPoint(r.origin.x + r.size.w - 2, r.origin.y + r.size.h - 2));
@@ -90,37 +89,6 @@ static void draw_battery(GContext *ctx, GRect r)
   }
 }
 
-// Walking person silhouette used as the step icon
-static void draw_step_icon(GContext *ctx, GRect r)
-{
-  int x = r.origin.x, y = r.origin.y;
-  int w = r.size.w, h = r.size.h;
-  int cx = x + w / 2;
-
-  graphics_context_set_stroke_color(ctx, GColorWhite);
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_context_set_stroke_width(ctx, 2);
-
-  // Head
-  int head_r = 3;
-  int head_cy = y + head_r + 1;
-  graphics_fill_circle(ctx, GPoint(cx + 1, head_cy), head_r);
-
-  // Torso
-  int shoulder_y = head_cy + head_r + 1;
-  int hip_y = y + h * 55 / 100;
-  graphics_draw_line(ctx, GPoint(cx + 1, shoulder_y), GPoint(cx - 1, hip_y));
-
-  // Legs
-  graphics_draw_line(ctx, GPoint(cx - 1, hip_y), GPoint(cx + 3, y + h - 2)); // front
-  graphics_draw_line(ctx, GPoint(cx - 1, hip_y), GPoint(cx - 4, y + h - 5)); // back
-
-  // Arms (opposite phase to legs)
-  int arm_y = shoulder_y + 2;
-  graphics_draw_line(ctx, GPoint(cx, arm_y), GPoint(cx + 4, hip_y - 2)); // back arm
-  graphics_draw_line(ctx, GPoint(cx, arm_y), GPoint(cx - 4, hip_y - 1)); // front arm
-}
-
 // ── Header layer (BT | steps | battery) ─────────────────────────────────────
 
 static void header_update_proc(Layer *layer, GContext *ctx)
@@ -129,33 +97,23 @@ static void header_update_proc(Layer *layer, GContext *ctx)
   int w = bounds.size.w;
   int h = bounds.size.h;
 
-  // Bluetooth — top left
-  draw_bt_icon(ctx, GRect(4, 1, 16, h - 2));
+  // Bluetooth — top left (12×12, vertically centred)
+  draw_bt_icon(ctx, GRect(4, (h - 12) / 2, 12, 12));
 
   // Battery — top right (14 px tall, centred vertically)
-  int batt_w = 30, batt_h = 14;
-  draw_battery(ctx, GRect(w - batt_w - 4, (h - batt_h) / 2, batt_w, batt_h));
+  int batt_w = 24, batt_h = 11;
+  draw_battery(ctx, GRect(w - batt_w, (h - batt_h) / 2, batt_w, batt_h));
 
-  // Steps: icon + text, centred in the remaining middle space
-  int mid_left = 4 + 16 + 4;          // 24
-  int mid_right = w - batt_w - 4 - 4; // w - 38
+  // Date: centred in the remaining middle space
+  int mid_left = 4 + 12 + 4;      // 20
+  int mid_right = w - batt_w - 4; // w - 38
   int mid_w = mid_right - mid_left;
 
-  int icon_w = 14;
-  int text_len = (int)strlen(s_steps_buf);
-  int est_text_w = text_len * 11 + 6; // ~11 px/digit for GOTHIC_18_BOLD
-  int group_w = icon_w + 3 + est_text_w;
-  int group_x = mid_left + (mid_w - group_w) / 2;
-  if (group_x < mid_left)
-    group_x = mid_left;
-
-  draw_step_icon(ctx, GRect(group_x, 1, icon_w, h - 2));
-
   GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  GRect text_rect = GRect(group_x + icon_w + 3, -2, est_text_w + 10, h + 4);
-  graphics_context_set_text_color(ctx, GColorYellow);
-  graphics_draw_text(ctx, s_steps_buf, font, text_rect,
-                     GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  GRect text_rect = GRect(mid_left, -2, mid_w, h + 4);
+  graphics_context_set_text_color(ctx, GColorWhite);
+  graphics_draw_text(ctx, s_date_buf, font, text_rect,
+                     GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
 }
 
 // ── Service callbacks ────────────────────────────────────────────────────────
@@ -166,6 +124,9 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   strftime(time_buf, sizeof(time_buf),
            clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
   text_layer_set_text(s_time_layer, time_buf);
+
+  strftime(s_date_buf, sizeof(s_date_buf), "%b %e %Y", tick_time);
+  layer_mark_dirty(s_header_layer);
 }
 
 static void bt_handler(bool connected)
@@ -182,32 +143,6 @@ static void battery_handler(BatteryChargeState state)
   layer_mark_dirty(s_header_layer);
 }
 
-static void update_steps(void)
-{
-#if defined(PBL_HEALTH)
-  HealthMetric metric = HealthMetricStepCount;
-  time_t start = time_start_of_today();
-  time_t end = time(NULL);
-  if (health_service_metric_accessible(metric, start, end) &
-      HealthServiceAccessibilityMaskAvailable)
-  {
-    s_steps = (int32_t)health_service_sum(metric, start, end);
-  }
-#endif
-  snprintf(s_steps_buf, sizeof(s_steps_buf), "%d", (int)s_steps);
-  if (s_header_layer)
-    layer_mark_dirty(s_header_layer);
-}
-
-static void health_handler(HealthEventType event, void *context)
-{
-  if (event == HealthEventMovementUpdate ||
-      event == HealthEventSignificantUpdate)
-  {
-    update_steps();
-  }
-}
-
 // ── Window ───────────────────────────────────────────────────────────────────
 
 static void window_load(Window *window)
@@ -216,7 +151,7 @@ static void window_load(Window *window)
   GRect bounds = layer_get_bounds(root);
 
   // Top row: bluetooth | steps | battery
-  s_header_layer = layer_create(GRect(0, 0, bounds.size.w, 30));
+  s_header_layer = layer_create(GRect(0, 0, bounds.size.w, 20));
   layer_set_update_proc(s_header_layer, header_update_proc);
   layer_add_child(root, s_header_layer);
 
@@ -233,7 +168,6 @@ static void window_load(Window *window)
   // Seed initial state
   s_bt_connected = connection_service_peek_pebble_app_connection();
   s_battery_state = battery_state_service_peek();
-  update_steps();
 
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
@@ -263,9 +197,6 @@ static void init(void)
       .pebble_app_connection_handler = bt_handler,
   });
   battery_state_service_subscribe(battery_handler);
-#if defined(PBL_HEALTH)
-  health_service_events_subscribe(health_handler, NULL);
-#endif
 }
 
 static void deinit(void)
@@ -273,9 +204,6 @@ static void deinit(void)
   tick_timer_service_unsubscribe();
   connection_service_unsubscribe();
   battery_state_service_unsubscribe();
-#if defined(PBL_HEALTH)
-  health_service_events_unsubscribe();
-#endif
   window_destroy(s_window);
 }
 
