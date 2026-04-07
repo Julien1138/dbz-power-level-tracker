@@ -3,6 +3,8 @@
 static Window *s_window;
 static Layer *s_header_layer;
 static TextLayer *s_time_layer;
+static BitmapLayer *s_goku_layer;
+static GBitmap *s_goku_bitmap;
 
 static bool s_bt_connected;
 static BatteryChargeState s_battery_state;
@@ -155,6 +157,19 @@ static void window_load(Window *window)
   layer_set_update_proc(s_header_layer, header_update_proc);
   layer_add_child(root, s_header_layer);
 
+  // Goku sprite — centred between header and time bar
+  s_goku_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_GOKU_STILL);
+  GSize img_size = gbitmap_get_bounds(s_goku_bitmap).size;
+  int header_h = 20;
+  int time_h = 42;
+  int available_h = bounds.size.h - header_h - time_h;
+  int img_x = (bounds.size.w - img_size.w) / 2;
+  int img_y = header_h + (available_h - img_size.h) / 2;
+  s_goku_layer = bitmap_layer_create(GRect(img_x, img_y, img_size.w, img_size.h));
+  bitmap_layer_set_bitmap(s_goku_layer, s_goku_bitmap);
+  bitmap_layer_set_compositing_mode(s_goku_layer, GCompOpSet);
+  layer_add_child(root, bitmap_layer_get_layer(s_goku_layer));
+
   // Time — bottom
   s_time_layer = text_layer_create(
       GRect(0, bounds.size.h - 42, bounds.size.w, 42));
@@ -177,6 +192,8 @@ static void window_load(Window *window)
 static void window_unload(Window *window)
 {
   layer_destroy(s_header_layer);
+  bitmap_layer_destroy(s_goku_layer);
+  gbitmap_destroy(s_goku_bitmap);
   text_layer_destroy(s_time_layer);
 }
 

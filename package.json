@@ -24,7 +24,13 @@
     },
     "messageKeys": [],
     "resources": {
-      "media": []
+      "media": [
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_STILL",
+          "file": "goku_still.png"
+        }
+      ]
     }
   }
 }
