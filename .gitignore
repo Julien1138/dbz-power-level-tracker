@@ -1,0 +1,4 @@
+build/
+.pebble/
+*.pbw
+node_modules/
