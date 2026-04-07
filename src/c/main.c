@@ -5,6 +5,9 @@ static Layer *s_header_layer;
 static TextLayer *s_time_layer;
 static BitmapLayer *s_goku_layer;
 static GBitmap *s_goku_bitmap;
+#if defined(PBL_ROUND)
+static Layer *s_status_layer;
+#endif
 
 static bool s_bt_connected;
 static BatteryChargeState s_battery_state;
@@ -91,7 +94,7 @@ static void draw_battery(GContext *ctx, GRect r)
   }
 }
 
-// ── Header layer (BT | steps | battery) ─────────────────────────────────────
+// ── Header layer ─────────────────────────────────────────────────────────────
 
 static void header_update_proc(Layer *layer, GContext *ctx)
 {
@@ -99,16 +102,21 @@ static void header_update_proc(Layer *layer, GContext *ctx)
   int w = bounds.size.w;
   int h = bounds.size.h;
 
-  // Bluetooth — top left (12×12, vertically centred)
+#if defined(PBL_ROUND)
+  // Round: date only, centered (BT + battery are in the status layer above clock)
+  GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  graphics_context_set_text_color(ctx, GColorWhite);
+  graphics_draw_text(ctx, s_date_buf, font, GRect(0, -2, w, h + 4),
+                     GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+#else
+  // Non-round: BT | date | battery all in one top row
   draw_bt_icon(ctx, GRect(4, (h - 12) / 2, 12, 12));
 
-  // Battery — top right (14 px tall, centred vertically)
   int batt_w = 24, batt_h = 11;
   draw_battery(ctx, GRect(w - batt_w, (h - batt_h) / 2, batt_w, batt_h));
 
-  // Date: centred in the remaining middle space
-  int mid_left = 4 + 12 + 4;      // 20
-  int mid_right = w - batt_w - 4; // w - 38
+  int mid_left = 4 + 12 + 4;
+  int mid_right = w - batt_w - 4;
   int mid_w = mid_right - mid_left;
 
   GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
@@ -116,7 +124,27 @@ static void header_update_proc(Layer *layer, GContext *ctx)
   graphics_context_set_text_color(ctx, GColorWhite);
   graphics_draw_text(ctx, s_date_buf, font, text_rect,
                      GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+#endif
 }
+
+#if defined(PBL_ROUND)
+// Round-only: BT + battery centered together above the clock
+static void status_update_proc(Layer *layer, GContext *ctx)
+{
+  GRect bounds = layer_get_bounds(layer);
+  int w = bounds.size.w;
+  int h = bounds.size.h;
+
+  int bt_w = 12, bt_h = 12;
+  int batt_w = 24, batt_h = 11;
+  int gap = 8;
+  int group_w = bt_w + gap + batt_w;
+  int x = (w - group_w) / 2;
+
+  draw_bt_icon(ctx, GRect(x, (h - bt_h) / 2, bt_w, bt_h));
+  draw_battery(ctx, GRect(x + bt_w + gap, (h - batt_h) / 2, batt_w, batt_h));
+}
+#endif
 
 // ── Service callbacks ────────────────────────────────────────────────────────
 
@@ -135,6 +163,9 @@ static void bt_handler(bool connected)
 {
   s_bt_connected = connected;
   layer_mark_dirty(s_header_layer);
+#if defined(PBL_ROUND)
+  if (s_status_layer) layer_mark_dirty(s_status_layer);
+#endif
   if (!connected)
     vibes_short_pulse();
 }
@@ -143,6 +174,9 @@ static void battery_handler(BatteryChargeState state)
 {
   s_battery_state = state;
   layer_mark_dirty(s_header_layer);
+#if defined(PBL_ROUND)
+  if (s_status_layer) layer_mark_dirty(s_status_layer);
+#endif
 }
 
 // ── Window ───────────────────────────────────────────────────────────────────
@@ -170,6 +204,13 @@ static void window_load(Window *window)
   bitmap_layer_set_compositing_mode(s_goku_layer, GCompOpSet);
   layer_add_child(root, bitmap_layer_get_layer(s_goku_layer));
 
+#if defined(PBL_ROUND)
+  // Status row (BT + battery) just above the clock on round watches
+  s_status_layer = layer_create(GRect(0, bounds.size.h - 42 - 20, bounds.size.w, 20));
+  layer_set_update_proc(s_status_layer, status_update_proc);
+  layer_add_child(root, s_status_layer);
+#endif
+
   // Time — bottom
   s_time_layer = text_layer_create(
       GRect(0, bounds.size.h - 42, bounds.size.w, 42));
@@ -192,6 +233,9 @@ static void window_load(Window *window)
 static void window_unload(Window *window)
 {
   layer_destroy(s_header_layer);
+#if defined(PBL_ROUND)
+  layer_destroy(s_status_layer);
+#endif
   bitmap_layer_destroy(s_goku_layer);
   gbitmap_destroy(s_goku_bitmap);
   text_layer_destroy(s_time_layer);
