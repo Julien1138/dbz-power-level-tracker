@@ -3,6 +3,12 @@
 #if defined(PBL_PLATFORM_EMERY) || defined(PBL_PLATFORM_GABBRO)
 #define BARDOCK_SCALE 3
 #define BARDOCK_X -80
+#elif defined(PBL_PLATFORM_BASALT)
+#define BARDOCK_SCALE 2
+#define BARDOCK_X -60
+#elif defined(PBL_PLATFORM_CHALK)
+#define BARDOCK_SCALE 2
+#define BARDOCK_X -50
 #else
 #define BARDOCK_SCALE 2
 #define BARDOCK_X -60

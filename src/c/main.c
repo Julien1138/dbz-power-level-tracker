@@ -6,6 +6,7 @@
 #include "time_display.h"
 #include "character.h"
 #include "bardock.h"
+#include "steps_display.h"
 
 // ── Visibility toggles — comment a line to hide that element ─────────────────
 // #define SHOW_HEADER
@@ -26,6 +27,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   date_display_update(tick_time);
   header_layer_mark_dirty();
 #endif
+  steps_display_update();
 }
 
 static void bt_handler(bool connected)
@@ -58,6 +60,7 @@ static void window_load(Window *window)
   header_layer_create(root, bounds);
 #endif
   character_create(root);
+  steps_display_create(root);
 #ifdef SHOW_CLOCK
   time_display_create(root, bounds);
 #endif
@@ -77,12 +80,20 @@ static void window_unload(Window *window)
   header_layer_destroy();
 #endif
   character_destroy();
+  steps_display_destroy();
 #ifdef SHOW_CLOCK
   time_display_destroy();
 #endif
 }
 
 // ── App lifecycle ────────────────────────────────────────────────────────────
+
+#if defined(PBL_HEALTH)
+static void health_handler(HealthEventType event, void *context)
+{
+  steps_display_update();
+}
+#endif
 
 static void init(void)
 {
@@ -99,6 +110,9 @@ static void init(void)
       .pebble_app_connection_handler = bt_handler,
   });
   battery_state_service_subscribe(battery_handler);
+#if defined(PBL_HEALTH)
+  health_service_events_subscribe(health_handler, NULL);
+#endif
 }
 
 static void deinit(void)

@@ -36,6 +36,21 @@
           "type": "bitmap",
           "name": "IMAGE_BARDOCK_0",
           "file": "bardock_0_complete.png"
+        },
+        {
+          "type": "font",
+          "name": "FONT_DIGITALIX_14",
+          "file": "digitalix.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_DIGITALIX_12",
+          "file": "digitalix.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_ANIMEACE2_REG",
+          "file": "animeace2_reg.ttf"
         }
       ]
     }

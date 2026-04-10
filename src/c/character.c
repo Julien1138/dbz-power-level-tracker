@@ -1,10 +1,24 @@
 #include "character.h"
 
 static BitmapLayer *s_layer;
-static GBitmap     *s_bitmap;
+static GBitmap *s_bitmap;
 
-#define CHARACTER_X  120
-#define CHARACTER_Y  42
+#if defined(PBL_PLATFORM_EMERY)
+#define CHARACTER_X 140
+#define CHARACTER_Y 50
+#elif defined(PBL_PLATFORM_GABBRO)
+#define CHARACTER_X 165
+#define CHARACTER_Y 75
+#elif defined(PBL_PLATFORM_BASALT)
+#define CHARACTER_X 90
+#define CHARACTER_Y 20
+#elif defined(PBL_PLATFORM_CHALK)
+#define CHARACTER_X 110
+#define CHARACTER_Y 25
+#else
+#define CHARACTER_X 120
+#define CHARACTER_Y 42
+#endif
 
 void character_create(Layer *root)
 {
