@@ -34,6 +34,11 @@
         },
         {
           "type": "bitmap",
+          "name": "IMAGE_GOKU_SS_STILL",
+          "file": "goku_ss_still.png"
+        },
+        {
+          "type": "bitmap",
           "name": "IMAGE_BARDOCK_0",
           "file": "bardock_0_complete.png"
         },

@@ -1,4 +1,5 @@
 #include "steps_display.h"
+#include "character.h"
 
 #if defined(PBL_PLATFORM_EMERY)
 #define STEPS_X 85
@@ -27,8 +28,8 @@ void steps_display_update(void)
 {
 #if defined(PBL_HEALTH)
   HealthValue steps = health_service_sum_today(HealthMetricStepCount);
-  // steps = 45;
   snprintf(s_buf, sizeof(s_buf), "%05d", (int)steps);
+  character_set_super(steps >= 7000);
 #else
   snprintf(s_buf, sizeof(s_buf), "-----");
 #endif
@@ -40,13 +41,8 @@ void steps_display_create(Layer *root)
   s_layer = text_layer_create(GRect(STEPS_X, STEPS_Y, STEPS_W, STEPS_H));
   text_layer_set_background_color(s_layer, GColorClear);
   text_layer_set_text_color(s_layer, GColorBrightGreen);
-#if defined(PBL_PLATFORM_BASALT)
-  text_layer_set_font(s_layer,
-                      fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGITALIX_12)));
-#else
   text_layer_set_font(s_layer,
                       fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGITALIX_14)));
-#endif
   text_layer_set_text_alignment(s_layer, GTextAlignmentCenter);
   layer_add_child(root, text_layer_get_layer(s_layer));
 
