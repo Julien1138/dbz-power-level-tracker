@@ -2,7 +2,9 @@
   "name": "dbz-power-level-tracker",
   "author": "MakeAwesomeHappen",
   "version": "1.0.0",
-  "keywords": ["pebble-app"],
+  "keywords": [
+    "pebble-app"
+  ],
   "private": true,
   "dependencies": {},
   "pebble": {
@@ -29,6 +31,11 @@
           "type": "bitmap",
           "name": "IMAGE_GOKU_STILL",
           "file": "goku_still.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_0",
+          "file": "bardock_0_complete.png"
         }
       ]
     }

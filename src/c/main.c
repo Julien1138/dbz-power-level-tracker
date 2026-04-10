@@ -5,6 +5,11 @@
 #include "date_display.h"
 #include "time_display.h"
 #include "character.h"
+#include "bardock.h"
+
+// ── Visibility toggles — comment a line to hide that element ─────────────────
+// #define SHOW_HEADER
+// #define SHOW_CLOCK
 
 #define TIME_H 42
 
@@ -14,15 +19,21 @@ static Window *s_window;
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
+#ifdef SHOW_CLOCK
   time_display_update(tick_time);
+#endif
+#ifdef SHOW_HEADER
   date_display_update(tick_time);
   header_layer_mark_dirty();
+#endif
 }
 
 static void bt_handler(bool connected)
 {
   bt_icon_set_connected(connected);
+#ifdef SHOW_HEADER
   header_layer_mark_dirty();
+#endif
   if (!connected)
     vibes_short_pulse();
 }
@@ -30,7 +41,9 @@ static void bt_handler(bool connected)
 static void battery_handler(BatteryChargeState state)
 {
   battery_icon_set_state(state);
+#ifdef SHOW_HEADER
   header_layer_mark_dirty();
+#endif
 }
 
 // ── Window ───────────────────────────────────────────────────────────────────
@@ -40,9 +53,14 @@ static void window_load(Window *window)
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
 
+  bardock_create(root); // first = behind everything
+#ifdef SHOW_HEADER
   header_layer_create(root, bounds);
-  character_create(root, bounds, HEADER_H, TIME_H);
+#endif
+  character_create(root);
+#ifdef SHOW_CLOCK
   time_display_create(root, bounds);
+#endif
 
   bt_icon_set_connected(connection_service_peek_pebble_app_connection());
   battery_icon_set_state(battery_state_service_peek());
@@ -54,9 +72,14 @@ static void window_load(Window *window)
 
 static void window_unload(Window *window)
 {
+  bardock_destroy();
+#ifdef SHOW_HEADER
   header_layer_destroy();
+#endif
   character_destroy();
+#ifdef SHOW_CLOCK
   time_display_destroy();
+#endif
 }
 
 // ── App lifecycle ────────────────────────────────────────────────────────────
@@ -66,7 +89,7 @@ static void init(void)
   s_window = window_create();
   window_set_background_color(s_window, GColorBlack);
   window_set_window_handlers(s_window, (WindowHandlers){
-                                           .load   = window_load,
+                                           .load = window_load,
                                            .unload = window_unload,
                                        });
   window_stack_push(s_window, true);
