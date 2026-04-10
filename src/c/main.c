@@ -11,6 +11,7 @@
 // ── Visibility toggles — comment a line to hide that element ─────────────────
 // #define SHOW_HEADER
 // #define SHOW_CLOCK
+// #define SHOW_BARDOCK
 
 #define TIME_H 42
 
@@ -55,7 +56,9 @@ static void window_load(Window *window)
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
 
+#ifdef SHOW_BARDOCK
   bardock_create(root); // first = behind everything
+#endif
 #ifdef SHOW_HEADER
   header_layer_create(root, bounds);
 #endif
@@ -75,7 +78,9 @@ static void window_load(Window *window)
 
 static void window_unload(Window *window)
 {
+#ifdef SHOW_BARDOCK
   bardock_destroy();
+#endif
 #ifdef SHOW_HEADER
   header_layer_destroy();
 #endif
@@ -95,6 +100,14 @@ static void health_handler(HealthEventType event, void *context)
 }
 #endif
 
+static bool s_super_active = false;
+
+static void tap_handler(AccelAxisType axis, int32_t direction)
+{
+  s_super_active = !s_super_active;
+  character_set_super(s_super_active);
+}
+
 static void init(void)
 {
   s_window = window_create();
@@ -110,6 +123,7 @@ static void init(void)
       .pebble_app_connection_handler = bt_handler,
   });
   battery_state_service_subscribe(battery_handler);
+  accel_tap_service_subscribe(tap_handler);
 #if defined(PBL_HEALTH)
   health_service_events_subscribe(health_handler, NULL);
 #endif
@@ -120,6 +134,7 @@ static void deinit(void)
   tick_timer_service_unsubscribe();
   connection_service_unsubscribe();
   battery_state_service_unsubscribe();
+  accel_tap_service_unsubscribe();
   window_destroy(s_window);
 }
 
