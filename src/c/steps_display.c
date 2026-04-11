@@ -39,7 +39,7 @@ void steps_display_create(Layer *root)
   s_layer = text_layer_create(GRect(STEPS_X, STEPS_Y, STEPS_W, STEPS_H));
   text_layer_set_background_color(s_layer, GColorClear);
 #if defined(PBL_COLOR)
-  text_layer_set_text_color(s_layer, GColorBrightGreen);
+  text_layer_set_text_color(s_layer, GColorScreaminGreen);
 #else
   text_layer_set_text_color(s_layer, GColorBlack);
 #endif

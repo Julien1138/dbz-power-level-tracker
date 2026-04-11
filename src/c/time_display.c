@@ -50,7 +50,7 @@ void time_display_destroy(void)
 }
 
 // Uncomment and edit to display a fixed time for testing:
-#define CLOCK_TEST_TIME "23:59"
+// #define CLOCK_TEST_TIME "23:59"
 
 void time_display_update(struct tm *t)
 {

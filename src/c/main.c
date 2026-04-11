@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "background.h"
 #include "header_layer.h"
 #include "bt_icon.h"
 #include "battery_icon.h"
@@ -54,8 +55,11 @@ static void window_load(Window *window)
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
 
+#ifdef PBL_COLOR
+  background_create(root); // very first = behind everything
+#endif
 #ifdef SHOW_BARDOCK
-  bardock_create(root); // first = behind everything
+  bardock_create(root);
 #endif
 #ifdef SHOW_HEADER
   header_layer_create(root, bounds);
@@ -76,6 +80,9 @@ static void window_load(Window *window)
 
 static void window_unload(Window *window)
 {
+#ifdef PBL_COLOR
+  background_destroy();
+#endif
 #ifdef SHOW_BARDOCK
   bardock_destroy();
 #endif

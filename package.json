@@ -29,6 +29,76 @@
       "media": [
         {
           "type": "bitmap",
+          "name": "IMAGE_CELL_GAMES_RING",
+          "file": "cell_games_ring_144_168.png",
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "diorite",
+            "flint"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CELL_GAMES_RING",
+          "file": "cell_games_ring_180_180.png",
+          "targetPlatforms": [
+            "chalk"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CELL_GAMES_RING",
+          "file": "cell_games_ring_200_228.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CELL_GAMES_RING",
+          "file": "cell_games_ring_260_260.png",
+          "targetPlatforms": [
+            "gabbro"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CLIFFS",
+          "file": "cliffs_144_168.png",
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "diorite",
+            "flint"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CLIFFS",
+          "file": "cliffs_180_180.png",
+          "targetPlatforms": [
+            "chalk"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CLIFFS",
+          "file": "cliffs_200_228.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_CLIFFS",
+          "file": "cliffs_260_260.png",
+          "targetPlatforms": [
+            "gabbro"
+          ]
+        },
+        {
+          "type": "bitmap",
           "name": "IMAGE_GOKU_STILL",
           "file": "goku_still.png"
         },

@@ -2,7 +2,7 @@
 
 #if defined(PBL_PLATFORM_EMERY)
 #define BARDOCK_RES RESOURCE_ID_IMAGE_BARDOCK_0_X3
-#define BARDOCK_X -90
+#define BARDOCK_X -100
 #elif defined(PBL_PLATFORM_GABBRO)
 #define BARDOCK_RES RESOURCE_ID_IMAGE_BARDOCK_0_X3
 #define BARDOCK_X -80
@@ -11,7 +11,7 @@
 #define BARDOCK_X -50
 #else
 #define BARDOCK_RES RESOURCE_ID_IMAGE_BARDOCK_0_X2
-#define BARDOCK_X -60
+#define BARDOCK_X -70
 #endif
 
 #define BARDOCK_Y_OFFSET 0 // px from bottom: 0 = flush, + = below screen, - = above
