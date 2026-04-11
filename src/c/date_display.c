@@ -19,7 +19,7 @@
 
 #elif defined(PBL_PLATFORM_CHALK)
 #define DATE_X 0
-#define DATE_Y 150
+#define DATE_Y 153
 #define DATE_W 180
 #define DATE_H 22
 #define DATE_FONT RESOURCE_ID_FONT_ANIMEACE_14

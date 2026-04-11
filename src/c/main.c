@@ -3,6 +3,7 @@
 #include "header_layer.h"
 #include "bt_icon.h"
 #include "battery_icon.h"
+#include "battery_layer.h"
 #include "date_display.h"
 #include "time_display.h"
 #include "character.h"
@@ -13,6 +14,7 @@
 // #define SHOW_HEADER
 #define SHOW_CLOCK
 #define SHOW_DATE
+#define SHOW_BATTERY
 #define SHOW_BARDOCK
 
 static Window *s_window;
@@ -47,6 +49,9 @@ static void bt_handler(bool connected)
 static void battery_handler(BatteryChargeState state)
 {
   battery_icon_set_state(state);
+#ifdef SHOW_BATTERY
+  battery_layer_mark_dirty();
+#endif
 #ifdef SHOW_HEADER
   header_layer_mark_dirty();
 #endif
@@ -70,6 +75,9 @@ static void window_load(Window *window)
 #endif
   character_create(root);
   steps_display_create(root);
+#ifdef SHOW_BATTERY
+  battery_layer_create(root);
+#endif
 #ifdef SHOW_CLOCK
   time_display_create(root);
 #endif
@@ -98,6 +106,9 @@ static void window_unload(Window *window)
 #endif
   character_destroy();
   steps_display_destroy();
+#ifdef SHOW_BATTERY
+  battery_layer_destroy();
+#endif
 #ifdef SHOW_CLOCK
   time_display_destroy();
 #endif
