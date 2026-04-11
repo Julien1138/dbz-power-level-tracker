@@ -3,53 +3,104 @@
 // ── Position ──────────────────────────────────────────────────────────────────
 #if defined(PBL_PLATFORM_EMERY)
 #define CHARACTER_X 133
-#define CHARACTER_Y 50
+#define CHARACTER_Y  50
 #elif defined(PBL_PLATFORM_GABBRO)
 #define CHARACTER_X 168
-#define CHARACTER_Y 75
+#define CHARACTER_Y  75
 #elif defined(PBL_PLATFORM_CHALK)
 #define CHARACTER_X 103
-#define CHARACTER_Y 25
+#define CHARACTER_Y  25
 #else
-#define CHARACTER_X 83
-#define CHARACTER_Y 20
+#define CHARACTER_X  83
+#define CHARACTER_Y  20
 #endif
 
-// ── Animation tuning ──────────────────────────────────────────────────────────
-// 3 phases: still→to_ss_1, to_ss_1→to_ss_2, to_ss_2→ss_still
-// Each phase runs the same blink sequence below.
+// ── Vibration patterns ────────────────────────────────────────────────────────
+// Alternating on/off durations in ms (starts with on).
 
-// Number of blinks per phase
-#define BLINK_COUNT 7
+static const uint32_t VIBE_TENSION[]   = { 80, 600, 80, 500, 100, 400, 100, 300, 150, 200, 150, 150 };
+static const uint32_t VIBE_BUILDING[]  = { 100, 900, 120, 700, 150, 550, 180, 400, 200, 300, 220, 200, 250, 100, 300, 50, 350, 30, 400 };
+//  pulses grow: 100→400 ms │ gaps shrink: 900→30 ms │ total ≈ 5500 ms │ 19 segments
+static const uint32_t VIBE_EXPLOSION[] = { 150, 60, 250, 50, 350, 40, 450, 40, 500, 40, 550, 30, 600, 30, 650, 30, 700, 30, 900 };
+//  escalating heavy impacts │ gaps always short (explosive) │ total ≈ 5450 ms │ 19 segments
+static const uint32_t VIBE_POWER[]     = { 800, 100, 400, 150, 300, 200, 600 };
 
-// How long the "next" frame flashes on each blink (ms) — increase to lengthen flashes
-static const uint16_t BLINK_ON_MS[BLINK_COUNT] =
-    {60, 120, 200, 350, 500, 700, 900};
+// ── Blink patterns ────────────────────────────────────────────────────────────
+// Reused across visual phases — define separate arrays to give each phase its own rhythm.
+// Last entry of blink_off MUST be 0 (signals the final flash).
 
-// Gap (showing current frame) between flashes (ms).
-// The last entry MUST be 0 — it signals the final blink (stay on next, advance phase).
-static const uint16_t BLINK_OFF_MS[BLINK_COUNT] =
-    {640, 580, 500, 350, 200, 50, 0};
+static const uint16_t BLINK_ON[]  = {  60, 120, 200, 350, 500, 700, 900 };
+static const uint16_t BLINK_OFF[] = { 640, 580, 500, 350, 200,  50,   0 };
 
-// Delay before the very first flash of each phase (ms)
-#define PHASE_START_DELAY_MS 300
+// ── Phase table ───────────────────────────────────────────────────────────────
+// One row per phase. The state machine steps through rows top to bottom.
+
+typedef struct {
+  uint32_t        bitmap_res;       // bitmap shown at the start of this phase
+  uint32_t        next_bitmap_res;  // blink target (0 = non-blink phase)
+  const uint16_t *blink_on_ms;      // NULL if non-blink phase
+  const uint16_t *blink_off_ms;     // last entry must be 0; NULL if non-blink phase
+  uint8_t         blink_count;      // 0 if non-blink phase
+  const uint32_t *vibe;             // vibration pattern (NULL = silent)
+  uint32_t        vibe_count;
+  uint32_t        duration_ms;      // non-blink: total phase duration (ms)
+                                    // blink:     initial delay before first flash (ms)
+} Phase;
+
+static const Phase PHASES[] = {
+  { // ── Tension ───────────────────────────────────────────────────────────────
+    // No visual change. Slow heartbeat vibration, growing dread.
+    .bitmap_res      = RESOURCE_ID_IMAGE_GOKU_STILL,
+    .next_bitmap_res = 0,
+    .blink_on_ms     = NULL, .blink_off_ms = NULL, .blink_count = 0,
+    .vibe = VIBE_TENSION, .vibe_count = ARRAY_LENGTH(VIBE_TENSION),
+    .duration_ms = 2800,
+  },
+  { // ── Growing tension ───────────────────────────────────────────────────────
+    // Blink between frames, accelerating vibration.
+    .bitmap_res      = RESOURCE_ID_IMAGE_GOKU_TO_SS_1,
+    .next_bitmap_res = RESOURCE_ID_IMAGE_GOKU_TO_SS_2,
+    .blink_on_ms = BLINK_ON, .blink_off_ms = BLINK_OFF, .blink_count = ARRAY_LENGTH(BLINK_ON),
+    .vibe = VIBE_BUILDING, .vibe_count = ARRAY_LENGTH(VIBE_BUILDING),
+    .duration_ms = 300,   // initial delay before first flash
+  },
+  { // ── Explosion ─────────────────────────────────────────────────────────────
+    // Power bursts through. Heavy impact vibration.
+    .bitmap_res      = RESOURCE_ID_IMAGE_GOKU_TO_SS_2,
+    .next_bitmap_res = RESOURCE_ID_IMAGE_GOKU_SS_STILL,
+    .blink_on_ms = BLINK_ON, .blink_off_ms = BLINK_OFF, .blink_count = ARRAY_LENGTH(BLINK_ON),
+    .vibe = VIBE_EXPLOSION, .vibe_count = ARRAY_LENGTH(VIBE_EXPLOSION),
+    .duration_ms = 300,   // initial delay before first flash
+  },
+  { // ── Stabilisation ─────────────────────────────────────────────────────────
+    // Final state locked in. Powerful, settled vibration.
+    .bitmap_res      = RESOURCE_ID_IMAGE_GOKU_SS_STILL,
+    .next_bitmap_res = 0,
+    .blink_on_ms     = NULL, .blink_off_ms = NULL, .blink_count = 0,
+    .vibe = VIBE_POWER, .vibe_count = ARRAY_LENGTH(VIBE_POWER),
+    .duration_ms = 2500,
+  },
+};
+
+#define PHASE_COUNT ((int)ARRAY_LENGTH(PHASES))
 
 // ── State ─────────────────────────────────────────────────────────────────────
 static BitmapLayer *s_layer;
-static GBitmap *s_bitmap;
-static AppTimer *s_timer;
-static int s_phase; // 0=idle, 1..3=active, 4=complete
-static int s_blink_idx;
-static bool s_showing_next;
-
-// Resources for each phase indexed as [phase-1]: {current_frame, next_frame}
-// To add/remove phases, only edit this array — nothing else needs changing.
-static const uint32_t PHASE_RES[][2] = {
-    {RESOURCE_ID_IMAGE_GOKU_TO_SS_1, RESOURCE_ID_IMAGE_GOKU_TO_SS_2},
-    {RESOURCE_ID_IMAGE_GOKU_TO_SS_2, RESOURCE_ID_IMAGE_GOKU_SS_STILL},
-};
+static GBitmap     *s_bitmap;
+static AppTimer    *s_timer;
+static int          s_phase_idx;    // -1=idle, 0..N-1=active, N=complete
+static int          s_blink_idx;
+static bool         s_showing_next;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+static void enter_phase(int idx);   // forward declaration
+
+static void play_vibe(const uint32_t *durations, uint32_t count)
+{
+  VibePattern p = { .durations = (uint32_t *)durations, .num_segments = count };
+  vibes_enqueue_custom_pattern(p);
+}
+
 static void set_bitmap(uint32_t res_id)
 {
   gbitmap_destroy(s_bitmap);
@@ -57,52 +108,62 @@ static void set_bitmap(uint32_t res_id)
   bitmap_layer_set_bitmap(s_layer, s_bitmap);
 }
 
-static void anim_tick(void *context);
-
-static void start_phase(int phase)
-{
-  s_phase = phase;
-  s_blink_idx = 0;
-  s_showing_next = false;
-  set_bitmap(PHASE_RES[phase - 1][0]);
-  s_timer = app_timer_register(PHASE_START_DELAY_MS, anim_tick, NULL);
-}
-
-static void anim_tick(void *context)
+static void advance_phase(void *context)
 {
   s_timer = NULL;
+  s_phase_idx++;
+  if (s_phase_idx < PHASE_COUNT)
+    enter_phase(s_phase_idx);
+  // else: animation complete — ss_still is showing, nothing more to do
+}
+
+static void blink_tick(void *context)
+{
+  s_timer = NULL;
+  const Phase *p = &PHASES[s_phase_idx];
 
   if (!s_showing_next)
   {
-    // Currently on frame A — flash frame B
-    set_bitmap(PHASE_RES[s_phase - 1][1]);
+    set_bitmap(p->next_bitmap_res);
     s_showing_next = true;
-    s_timer = app_timer_register(BLINK_ON_MS[s_blink_idx], anim_tick, NULL);
+    s_timer = app_timer_register(p->blink_on_ms[s_blink_idx], blink_tick, NULL);
   }
   else
   {
-    // Currently on frame B
-    uint16_t gap = BLINK_OFF_MS[s_blink_idx];
+    uint16_t gap = p->blink_off_ms[s_blink_idx];
     s_blink_idx++;
     if (gap == 0)
     {
-      // Last blink of this phase — stay on B, move to next phase
-      if (s_phase < (int)ARRAY_LENGTH(PHASE_RES))
-      {
-        start_phase(s_phase + 1);
-      }
-      else
-      {
-        s_phase = (int)ARRAY_LENGTH(PHASE_RES) + 1; // animation complete
-      }
+      advance_phase(NULL); // last flash done — move to next phase
     }
     else
     {
-      // Go back to A, wait before next flash
-      set_bitmap(PHASE_RES[s_phase - 1][0]);
+      set_bitmap(p->bitmap_res);
       s_showing_next = false;
-      s_timer = app_timer_register(gap, anim_tick, NULL);
+      s_timer = app_timer_register(gap, blink_tick, NULL);
     }
+  }
+}
+
+static void enter_phase(int idx)
+{
+  s_phase_idx = idx;
+  const Phase *p = &PHASES[idx];
+
+  set_bitmap(p->bitmap_res);
+  if (p->vibe) play_vibe(p->vibe, p->vibe_count);
+
+  if (p->blink_count == 0)
+  {
+    // Non-blink phase: wait duration_ms then advance
+    s_timer = app_timer_register(p->duration_ms, advance_phase, NULL);
+  }
+  else
+  {
+    // Blink phase: wait initial delay then start flashing
+    s_blink_idx    = 0;
+    s_showing_next = false;
+    s_timer = app_timer_register(p->duration_ms, blink_tick, NULL);
   }
 }
 
@@ -117,37 +178,31 @@ void character_create(Layer *root)
   bitmap_layer_set_compositing_mode(s_layer, GCompOpSet);
   layer_add_child(root, bitmap_layer_get_layer(s_layer));
 
-  s_phase = 0;
-  s_timer = NULL;
+  s_phase_idx = -1; // idle
+  s_timer     = NULL;
 }
 
 void character_set_super(bool super)
 {
   if (super)
   {
-    if (s_phase == 0)
-    {
-      start_phase(1); // begin transformation
-    }
-    // already animating or complete — nothing to do
+    if (s_phase_idx == -1)
+      enter_phase(0); // start from the first phase
+    // already running or complete — nothing to do
   }
   else
   {
-    // Cancel any running animation and reset to normal
-    if (s_timer)
-    {
-      app_timer_cancel(s_timer);
-      s_timer = NULL;
-    }
-    s_phase = 0;
+    if (s_timer) { app_timer_cancel(s_timer); s_timer = NULL; }
+    vibes_cancel();
+    s_phase_idx = -1;
     set_bitmap(RESOURCE_ID_IMAGE_GOKU_STILL);
   }
 }
 
 void character_destroy(void)
 {
-  if (s_timer)
-    app_timer_cancel(s_timer);
+  if (s_timer) app_timer_cancel(s_timer);
+  vibes_cancel();
   bitmap_layer_destroy(s_layer);
   gbitmap_destroy(s_bitmap);
 }

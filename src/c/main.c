@@ -123,7 +123,7 @@ static void init(void)
       .pebble_app_connection_handler = bt_handler,
   });
   battery_state_service_subscribe(battery_handler);
-  accel_tap_service_subscribe(tap_handler);
+  // accel_tap_service_subscribe(tap_handler);
 #if defined(PBL_HEALTH)
   health_service_events_subscribe(health_handler, NULL);
 #endif
