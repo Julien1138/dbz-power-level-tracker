@@ -7,6 +7,9 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 - Step count displayed as a power level in bright green (black on B&W devices)
 - Goku transforms to Super Saiyan at 7,000 steps, with a multi-phase animation and vibration sequence
 - Clock display with system time format (12h / 24h)
+- Date display
+- Battery level indicator with color-coded bar (green / yellow / red)
+- Red dot indicator on Bardock level tracker when Bluetooth is disconnected
 
 ## Inspiration
 
@@ -18,15 +21,13 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 
 ## Future Evolutions
 
-- [ ] Add Bluetooth status indicator and vibrate on disconnect (configurable)
-- [ ] Add battery level indicator
-- [ ] Add Bardock expression change when character evolves
+- [ ] Bardock expression change when character evolves
 - [ ] Make steps threshold for transformation configurable
-- [ ] Add multiple backgrounds (configurable)
-- [ ] Add multiple characters (configurable)
-- [ ] Add character movement when shaking wrist or walking (configurable)
-- [ ] Add colors configuration
-- [ ] Add weather info
+- [ ] Multiple configurable backgrounds
+- [ ] Multiple configurable characters
+- [ ] Character movement when shaking wrist or walking
+- [ ] Colors configuration
+- [ ] Weather info
 
 ## Contributing
 

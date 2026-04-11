@@ -1,7 +1,6 @@
 #include <pebble.h>
 #include "background.h"
-#include "header_layer.h"
-#include "bt_icon.h"
+#include "bt_layer.h"
 #include "battery_icon.h"
 #include "battery_layer.h"
 #include "date_display.h"
@@ -11,10 +10,10 @@
 #include "steps_display.h"
 
 // ── Visibility toggles — comment a line to hide that element ─────────────────
-// #define SHOW_HEADER
 #define SHOW_CLOCK
 #define SHOW_DATE
 #define SHOW_BATTERY
+#define SHOW_BT_DOT
 #define SHOW_BARDOCK
 
 static Window *s_window;
@@ -29,18 +28,14 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 #ifdef SHOW_DATE
   date_display_update(tick_time);
 #endif
-#ifdef SHOW_HEADER
-  date_display_update(tick_time);
-  header_layer_mark_dirty();
-#endif
   steps_display_update();
 }
 
 static void bt_handler(bool connected)
 {
-  bt_icon_set_connected(connected);
-#ifdef SHOW_HEADER
-  header_layer_mark_dirty();
+  bt_layer_set_connected(connected);
+#ifdef SHOW_BT_DOT
+  bt_layer_mark_dirty();
 #endif
   if (!connected)
     vibes_short_pulse();
@@ -52,9 +47,6 @@ static void battery_handler(BatteryChargeState state)
 #ifdef SHOW_BATTERY
   battery_layer_mark_dirty();
 #endif
-#ifdef SHOW_HEADER
-  header_layer_mark_dirty();
-#endif
 }
 
 // ── Window ───────────────────────────────────────────────────────────────────
@@ -62,7 +54,6 @@ static void battery_handler(BatteryChargeState state)
 static void window_load(Window *window)
 {
   Layer *root = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(root);
 
 #ifdef PBL_COLOR
   background_create(root); // very first = behind everything
@@ -70,11 +61,11 @@ static void window_load(Window *window)
 #ifdef SHOW_BARDOCK
   bardock_create(root);
 #endif
-#ifdef SHOW_HEADER
-  header_layer_create(root, bounds);
-#endif
   character_create(root);
   steps_display_create(root);
+#ifdef SHOW_BT_DOT
+  bt_layer_create(root);
+#endif
 #ifdef SHOW_BATTERY
   battery_layer_create(root);
 #endif
@@ -85,7 +76,7 @@ static void window_load(Window *window)
   date_display_create(root);
 #endif
 
-  bt_icon_set_connected(connection_service_peek_pebble_app_connection());
+  bt_layer_set_connected(connection_service_peek_pebble_app_connection());
   battery_icon_set_state(battery_state_service_peek());
 
   time_t now = time(NULL);
@@ -101,11 +92,11 @@ static void window_unload(Window *window)
 #ifdef SHOW_BARDOCK
   bardock_destroy();
 #endif
-#ifdef SHOW_HEADER
-  header_layer_destroy();
-#endif
   character_destroy();
   steps_display_destroy();
+#ifdef SHOW_BT_DOT
+  bt_layer_destroy();
+#endif
 #ifdef SHOW_BATTERY
   battery_layer_destroy();
 #endif
@@ -126,14 +117,6 @@ static void health_handler(HealthEventType event, void *context)
 }
 #endif
 
-static bool s_super_active = false;
-
-static void tap_handler(AccelAxisType axis, int32_t direction)
-{
-  s_super_active = !s_super_active;
-  character_set_super(s_super_active);
-}
-
 static void init(void)
 {
   s_window = window_create();
@@ -149,7 +132,6 @@ static void init(void)
       .pebble_app_connection_handler = bt_handler,
   });
   battery_state_service_subscribe(battery_handler);
-  // accel_tap_service_subscribe(tap_handler);
 #if defined(PBL_HEALTH)
   health_service_events_subscribe(health_handler, NULL);
 #endif
