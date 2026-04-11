@@ -5,17 +5,14 @@
 #define STEPS_X 85
 #define STEPS_Y 140
 #elif defined(PBL_PLATFORM_GABBRO)
-#define STEPS_X 110
+#define STEPS_X 120
 #define STEPS_Y 170
-#elif defined(PBL_PLATFORM_BASALT)
-#define STEPS_X 35
-#define STEPS_Y 110
 #elif defined(PBL_PLATFORM_CHALK)
 #define STEPS_X 55
 #define STEPS_Y 120
 #else
-#define STEPS_X 80
-#define STEPS_Y 120
+#define STEPS_X 35
+#define STEPS_Y 110
 #endif
 
 #define STEPS_W 144
@@ -40,7 +37,11 @@ void steps_display_create(Layer *root)
 {
   s_layer = text_layer_create(GRect(STEPS_X, STEPS_Y, STEPS_W, STEPS_H));
   text_layer_set_background_color(s_layer, GColorClear);
+#if defined(PBL_COLOR)
   text_layer_set_text_color(s_layer, GColorBrightGreen);
+#else
+  text_layer_set_text_color(s_layer, GColorBlack);
+#endif
   text_layer_set_font(s_layer,
                       fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGITALIX_14)));
   text_layer_set_text_alignment(s_layer, GTextAlignmentCenter);

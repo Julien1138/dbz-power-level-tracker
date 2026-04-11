@@ -5,17 +5,14 @@
 #define CHARACTER_X 133
 #define CHARACTER_Y 50
 #elif defined(PBL_PLATFORM_GABBRO)
-#define CHARACTER_X 158
+#define CHARACTER_X 168
 #define CHARACTER_Y 75
-#elif defined(PBL_PLATFORM_BASALT)
-#define CHARACTER_X 83
-#define CHARACTER_Y 20
 #elif defined(PBL_PLATFORM_CHALK)
 #define CHARACTER_X 103
 #define CHARACTER_Y 25
 #else
-#define CHARACTER_X 120
-#define CHARACTER_Y 42
+#define CHARACTER_X 83
+#define CHARACTER_Y 20
 #endif
 
 // ── Animation tuning ──────────────────────────────────────────────────────────

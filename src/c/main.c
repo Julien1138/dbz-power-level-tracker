@@ -11,7 +11,7 @@
 // ── Visibility toggles — comment a line to hide that element ─────────────────
 // #define SHOW_HEADER
 // #define SHOW_CLOCK
-// #define SHOW_BARDOCK
+#define SHOW_BARDOCK
 
 #define TIME_H 42
 
@@ -111,7 +111,7 @@ static void tap_handler(AccelAxisType axis, int32_t direction)
 static void init(void)
 {
   s_window = window_create();
-  window_set_background_color(s_window, GColorBlack);
+  window_set_background_color(s_window, GColorWhite);
   window_set_window_handlers(s_window, (WindowHandlers){
                                            .load = window_load,
                                            .unload = window_unload,
