@@ -1,6 +1,6 @@
 {
   "name": "dbz-power-level-tracker",
-  "author": "MakeAwesomeHappen",
+  "author": "Julien1138",
   "version": "1.0.0",
   "keywords": [
     "pebble-app"
@@ -69,7 +69,12 @@
         },
         {
           "type": "font",
-          "name": "FONT_ANIMEACE2_REG",
+          "name": "FONT_ANIMEACE_24",
+          "file": "animeace2_reg.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_ANIMEACE_36",
           "file": "animeace2_reg.ttf"
         }
       ]

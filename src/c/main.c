@@ -10,10 +10,8 @@
 
 // ── Visibility toggles — comment a line to hide that element ─────────────────
 // #define SHOW_HEADER
-// #define SHOW_CLOCK
+#define SHOW_CLOCK
 #define SHOW_BARDOCK
-
-#define TIME_H 42
 
 static Window *s_window;
 
@@ -65,7 +63,7 @@ static void window_load(Window *window)
   character_create(root);
   steps_display_create(root);
 #ifdef SHOW_CLOCK
-  time_display_create(root, bounds);
+  time_display_create(root);
 #endif
 
   bt_icon_set_connected(connection_service_peek_pebble_app_connection());

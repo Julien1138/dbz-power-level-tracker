@@ -4,6 +4,7 @@
       "name": "Pebble (basalt)",
       "includePath": [
         "${workspaceFolder}/src/c",
+        "${workspaceFolder}/build/include",
         "/home/julien/.pebble-sdk/SDKs/4.9.148/sdk-core/pebble/basalt/include"
       ],
       "defines": [
