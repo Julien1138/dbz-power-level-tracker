@@ -25,9 +25,9 @@ void steps_display_update(void)
 {
 #if defined(PBL_HEALTH)
   HealthValue steps = health_service_sum_today(HealthMetricStepCount);
-  // steps = 7500; // TESTING
+  steps = 7500; // TESTING
   snprintf(s_buf, sizeof(s_buf), "%05d", (int)steps);
-  character_set_super(steps >= 7000);
+  character_set_super(steps >= 2000);
 #else
   snprintf(s_buf, sizeof(s_buf), "-----");
 #endif

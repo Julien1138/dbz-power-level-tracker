@@ -12,6 +12,7 @@
 // ── Visibility toggles — comment a line to hide that element ─────────────────
 // #define SHOW_HEADER
 #define SHOW_CLOCK
+#define SHOW_DATE
 #define SHOW_BARDOCK
 
 static Window *s_window;
@@ -22,6 +23,9 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
 #ifdef SHOW_CLOCK
   time_display_update(tick_time);
+#endif
+#ifdef SHOW_DATE
+  date_display_update(tick_time);
 #endif
 #ifdef SHOW_HEADER
   date_display_update(tick_time);
@@ -69,6 +73,9 @@ static void window_load(Window *window)
 #ifdef SHOW_CLOCK
   time_display_create(root);
 #endif
+#ifdef SHOW_DATE
+  date_display_create(root);
+#endif
 
   bt_icon_set_connected(connection_service_peek_pebble_app_connection());
   battery_icon_set_state(battery_state_service_peek());
@@ -93,6 +100,9 @@ static void window_unload(Window *window)
   steps_display_destroy();
 #ifdef SHOW_CLOCK
   time_display_destroy();
+#endif
+#ifdef SHOW_DATE
+  date_display_destroy();
 #endif
 }
 

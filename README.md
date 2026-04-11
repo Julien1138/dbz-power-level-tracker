@@ -20,7 +20,6 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 
 - [ ] Add Bluetooth status indicator and vibrate on disconnect (configurable)
 - [ ] Add battery level indicator
-- [ ] Add date
 - [ ] Add Bardock expression change when character evolves
 - [ ] Make steps threshold for transformation configurable
 - [ ] Add multiple backgrounds (configurable)

@@ -121,25 +121,36 @@
           "type": "bitmap",
           "name": "IMAGE_BARDOCK",
           "file": "bardock_basalt.png",
-          "targetPlatforms": ["aplite", "basalt", "diorite", "flint"]
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "diorite",
+            "flint"
+          ]
         },
         {
           "type": "bitmap",
           "name": "IMAGE_BARDOCK",
           "file": "bardock_chalk.png",
-          "targetPlatforms": ["chalk"]
+          "targetPlatforms": [
+            "chalk"
+          ]
         },
         {
           "type": "bitmap",
           "name": "IMAGE_BARDOCK",
           "file": "bardock_emery.png",
-          "targetPlatforms": ["emery"]
+          "targetPlatforms": [
+            "emery"
+          ]
         },
         {
           "type": "bitmap",
           "name": "IMAGE_BARDOCK",
           "file": "bardock_gabbro.png",
-          "targetPlatforms": ["gabbro"]
+          "targetPlatforms": [
+            "gabbro"
+          ]
         },
         {
           "type": "font",
@@ -150,6 +161,21 @@
           "type": "font",
           "name": "FONT_DIGITALIX_12",
           "file": "digitalix.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_ANIMEACE_12",
+          "file": "animeace2_reg.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_ANIMEACE_14",
+          "file": "animeace2_reg.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_ANIMEACE_18",
+          "file": "animeace2_reg.ttf"
         },
         {
           "type": "font",
