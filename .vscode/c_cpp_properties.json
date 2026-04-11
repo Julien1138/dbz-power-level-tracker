@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "name": "Pebble (basalt)",
+      "includePath": [
+        "${workspaceFolder}/src/c",
+        "/home/julien/.pebble-sdk/SDKs/4.9.148/sdk-core/pebble/basalt/include"
+      ],
+      "defines": [
+        "PBL_PLATFORM_BASALT",
+        "PBL_COLOR",
+        "PBL_RECT",
+        "PBL_HEALTH"
+      ],
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "c11",
+      "intelliSenseMode": "linux-gcc-arm"
+    }
+  ],
+  "version": 4
+}
