@@ -1,7 +1,6 @@
 #include <pebble.h>
 #include "background.h"
 #include "bt_layer.h"
-#include "battery_icon.h"
 #include "battery_layer.h"
 #include "date_display.h"
 #include "time_display.h"
@@ -43,7 +42,6 @@ static void bt_handler(bool connected)
 
 static void battery_handler(BatteryChargeState state)
 {
-  battery_icon_set_state(state);
 #ifdef SHOW_BATTERY
   battery_layer_mark_dirty();
 #endif
@@ -77,7 +75,6 @@ static void window_load(Window *window)
 #endif
 
   bt_layer_set_connected(connection_service_peek_pebble_app_connection());
-  battery_icon_set_state(battery_state_service_peek());
 
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
@@ -142,7 +139,6 @@ static void deinit(void)
   tick_timer_service_unsubscribe();
   connection_service_unsubscribe();
   battery_state_service_unsubscribe();
-  accel_tap_service_unsubscribe();
   window_destroy(s_window);
 }
 
