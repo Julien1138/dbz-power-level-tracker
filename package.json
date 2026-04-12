@@ -29,6 +29,12 @@
       "media": [
         {
           "type": "bitmap",
+          "name": "IMAGE_MENU_ICON",
+          "file": "icon.png",
+          "menuIcon": true
+        },
+        {
+          "type": "bitmap",
           "name": "IMAGE_CELL_GAMES_RING",
           "file": "cell_games_ring_144_168.png",
           "targetPlatforms": [
