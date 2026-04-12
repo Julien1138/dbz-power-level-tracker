@@ -101,6 +101,11 @@ static const Phase PHASES[] = {
 
 #define PHASE_COUNT ((int)ARRAY_LENGTH(PHASES))
 
+// ── Persistence ───────────────────────────────────────────────────────────────
+// The watchface is killed and restarted on every menu navigation, so C statics
+// are not enough. Use Pebble's persistent storage to remember the super state.
+#define PERSIST_KEY_SUPER 1
+
 // ── State ─────────────────────────────────────────────────────────────────────
 static BitmapLayer *s_layer;
 static GBitmap *s_bitmap;
@@ -108,6 +113,7 @@ static AppTimer *s_timer;
 static int s_phase_idx; // -1=idle, 0..N-1=active, N=complete
 static int s_blink_idx;
 static bool s_showing_next;
+static bool s_was_super; // loaded from persistent storage on create
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 static void enter_phase(int idx); // forward declaration
@@ -131,7 +137,11 @@ static void advance_phase(void *context)
   s_phase_idx++;
   if (s_phase_idx < PHASE_COUNT)
     enter_phase(s_phase_idx);
-  // else: animation complete — ss_still is showing, nothing more to do
+  else
+  {
+    s_was_super = true;
+    persist_write_bool(PERSIST_KEY_SUPER, true);
+  }
 }
 
 static void blink_tick(void *context)
@@ -198,15 +208,27 @@ void character_create(Layer *root)
 
   s_phase_idx = -1; // idle
   s_timer = NULL;
+  s_was_super = persist_exists(PERSIST_KEY_SUPER) && persist_read_bool(PERSIST_KEY_SUPER);
 }
 
 void character_set_super(bool super)
 {
   if (super)
   {
-    if (s_phase_idx == -1)
-      enter_phase(0); // start from the first phase
-    // already running or complete — nothing to do
+    if (s_was_super)
+    {
+      // Already transformed before this window load — skip animation, show final state directly
+      if (s_phase_idx == -1)
+      {
+        set_bitmap(RESOURCE_ID_IMAGE_GOKU_SS_STILL);
+        s_phase_idx = PHASE_COUNT;
+      }
+    }
+    else if (s_phase_idx == -1)
+    {
+      enter_phase(0); // first time crossing the threshold — play the full animation
+    }
+    // else: animation already running or complete this session — nothing to do
   }
   else
   {
@@ -216,6 +238,8 @@ void character_set_super(bool super)
       s_timer = NULL;
     }
     vibes_cancel();
+    s_was_super = false;
+    persist_write_bool(PERSIST_KEY_SUPER, false);
     s_phase_idx = -1;
     set_bitmap(RESOURCE_ID_IMAGE_GOKU_STILL);
   }
