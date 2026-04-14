@@ -23,7 +23,6 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 
 ## Future Evolutions
 
-- [ ] Bardock expression change when character evolves
 - [ ] Make steps threshold for transformation configurable
 - [ ] Multiple configurable backgrounds
 - [ ] Multiple configurable characters
