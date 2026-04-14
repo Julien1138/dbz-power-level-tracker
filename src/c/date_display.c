@@ -1,4 +1,5 @@
 #include "date_display.h"
+#include <string.h>
 
 // ── Position & size ───────────────────────────────────────────────────────────
 // Positioned just below the clock — mirror its X/W and use the next font size down.
@@ -39,6 +40,50 @@
 #define DATE_FONT RESOURCE_ID_FONT_ANIMEACE_12
 #endif
 
+// ── Locale-aware day/month names ──────────────────────────────────────────────
+// strftime %a/%b on Pebble always outputs English — we resolve names manually.
+// Abbreviations are ASCII-only (accented chars may not render in custom fonts).
+
+typedef struct {
+  const char *prefix;    // first 2 chars of i18n_get_system_locale(), e.g. "fr"
+  const char *days[7];   // Sun=0 .. Sat=6
+  const char *months[12]; // Jan=0 .. Dec=11
+} LocaleStrings;
+
+static const LocaleStrings LOCALES[] = {
+  { "fr",
+    {"Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"},
+    {"Jan", "Fev", "Mar", "Avr", "Mai", "Jun", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec"} },
+  { "de",
+    {"So",  "Mo",  "Di",  "Mi",  "Do",  "Fr",  "Sa"},
+    {"Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"} },
+  { "es",
+    {"Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"},
+    {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"} },
+  { "it",
+    {"Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"},
+    {"Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"} },
+  { "pt",
+    {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"},
+    {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"} },
+  // English — also serves as fallback for unsupported locales
+  { "en",
+    {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"},
+    {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"} },
+};
+#define LOCALE_COUNT ((int)ARRAY_LENGTH(LOCALES))
+
+static const LocaleStrings *get_locale(void)
+{
+  const char *sys = i18n_get_system_locale();
+  for (int i = 0; i < LOCALE_COUNT - 1; i++)
+    if (strncmp(sys, LOCALES[i].prefix, 2) == 0)
+      return &LOCALES[i];
+  return &LOCALES[LOCALE_COUNT - 1]; // English fallback
+}
+
+// ── Layer ─────────────────────────────────────────────────────────────────────
+
 static TextLayer *s_layer;
 static char s_buf[12];
 
@@ -59,6 +104,8 @@ void date_display_destroy(void)
 
 void date_display_update(struct tm *t)
 {
-  strftime(s_buf, sizeof(s_buf), "%a %d %b", t);
+  const LocaleStrings *loc = get_locale();
+  snprintf(s_buf, sizeof(s_buf), "%s %02d %s",
+           loc->days[t->tm_wday], t->tm_mday, loc->months[t->tm_mon]);
   text_layer_set_text(s_layer, s_buf);
 }
