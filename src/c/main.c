@@ -15,7 +15,24 @@
 #define SHOW_BT_DOT
 #define SHOW_BARDOCK
 
+// ── Power level threshold ─────────────────────────────────────────────────────
+#define SUPER_SAIYAN_STEPS 7000
+
 static Window *s_window;
+
+// ── Cross-module callbacks ────────────────────────────────────────────────────
+
+static void on_steps_updated(int steps)
+{
+  character_set_super(steps >= SUPER_SAIYAN_STEPS);
+}
+
+#ifdef SHOW_BARDOCK
+static void on_stretch_changed(bool stretching)
+{
+  bardock_set_expr(stretching ? 1 : 0);
+}
+#endif
 
 // ── Service callbacks ────────────────────────────────────────────────────────
 
@@ -80,6 +97,11 @@ static void window_load(Window *window)
 #endif
 
   bt_layer_set_connected(connection_service_peek_pebble_app_connection());
+
+  steps_display_set_callback(on_steps_updated);
+#ifdef SHOW_BARDOCK
+  character_set_stretch_listener(on_stretch_changed);
+#endif
 
   time_t now = time(NULL);
   struct tm *t = localtime(&now);

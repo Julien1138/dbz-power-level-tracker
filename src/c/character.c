@@ -1,5 +1,4 @@
 #include "character.h"
-#include "bardock.h"
 
 // ── Position ──────────────────────────────────────────────────────────────────
 #if defined(PBL_PLATFORM_EMERY)
@@ -165,6 +164,13 @@ static bool s_was_super; // loaded from persistent storage on create
 static AppTimer *s_stretch_timer;
 static int s_stretch_idx;
 static const uint32_t *s_stretch_frames; // points to STRETCH_FRAMES or STRETCH_SS_FRAMES
+static CharacterStretchListener s_stretch_listener;
+
+// ── Public listener registration ─────────────────────────────────────────────
+void character_set_stretch_listener(CharacterStretchListener listener)
+{
+  s_stretch_listener = listener;
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 static void enter_phase(int idx); // forward declaration
@@ -255,7 +261,7 @@ static void stretch_tick(void *context)
   {
     // Initial delay elapsed — show first frame and schedule its duration
     set_bitmap(s_stretch_frames[0]);
-    bardock_set_expr(1);
+    if (s_stretch_listener) s_stretch_listener(true);
     s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[0], stretch_tick, NULL);
     return;
   }
@@ -265,7 +271,7 @@ static void stretch_tick(void *context)
     uint32_t idle = (s_phase_idx == PHASE_COUNT) ? RESOURCE_ID_IMAGE_GOKU_SS_STILL
                                                  : RESOURCE_ID_IMAGE_GOKU_STILL;
     set_bitmap(idle);
-    bardock_set_expr(0);
+    if (s_stretch_listener) s_stretch_listener(false);
     return;
   }
   set_bitmap(s_stretch_frames[s_stretch_idx]);
@@ -333,7 +339,7 @@ void character_tap(void)
   {
     app_timer_cancel(s_stretch_timer);
     s_stretch_timer = NULL;
-    bardock_set_expr(0);
+    if (s_stretch_listener) s_stretch_listener(false);
   }
 
   s_stretch_frames = (s_phase_idx == PHASE_COUNT) ? STRETCH_SS_FRAMES : STRETCH_FRAMES;

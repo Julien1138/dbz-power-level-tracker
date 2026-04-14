@@ -1,5 +1,4 @@
 #include "steps_display.h"
-#include "character.h"
 
 #if defined(PBL_PLATFORM_EMERY)
 #define STEPS_X 85
@@ -20,13 +19,20 @@
 
 static TextLayer *s_layer;
 static char s_buf[16];
+static StepsCallback s_callback;
+
+void steps_display_set_callback(StepsCallback cb)
+{
+  s_callback = cb;
+}
 
 void steps_display_update(void)
 {
 #if defined(PBL_HEALTH)
   HealthValue steps = health_service_sum_today(HealthMetricStepCount);
   snprintf(s_buf, sizeof(s_buf), "%05d", (int)steps);
-  character_set_super(steps >= 7000);
+  if (s_callback)
+    s_callback((int)steps);
 #else
   snprintf(s_buf, sizeof(s_buf), "-----");
 #endif
