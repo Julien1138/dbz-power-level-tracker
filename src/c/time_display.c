@@ -3,8 +3,8 @@
 // ── Position & size ───────────────────────────────────────────────────────────
 
 #if defined(PBL_PLATFORM_EMERY)
-#define CLOCK_X 75
-#define CLOCK_W 125
+#define CLOCK_X 65
+#define CLOCK_W 135
 #define CLOCK_H 50
 #define CLOCK_Y 0
 #define CLOCK_FONT RESOURCE_ID_FONT_ANIMEACE_36
