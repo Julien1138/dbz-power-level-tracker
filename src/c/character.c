@@ -166,6 +166,7 @@ static int s_stretch_idx;
 static const uint32_t *s_stretch_frames; // points to STRETCH_FRAMES or STRETCH_SS_FRAMES
 static CharacterStretchListener s_stretch_listener;
 static CharacterStateListener s_state_listener;
+static CharacterPhaseListener s_phase_listener;
 
 // ── Public listener registration ─────────────────────────────────────────────
 CharacterState character_get_state(void)
@@ -183,6 +184,11 @@ void character_set_stretch_listener(CharacterStretchListener listener)
 void character_set_state_listener(CharacterStateListener listener)
 {
   s_state_listener = listener;
+}
+
+void character_set_phase_listener(CharacterPhaseListener listener)
+{
+  s_phase_listener = listener;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -246,6 +252,7 @@ static void blink_tick(void *context)
 static void enter_phase(int idx)
 {
   s_phase_idx = idx;
+  if (s_phase_listener) s_phase_listener(idx);
   const Phase *p = &PHASES[idx];
 
   set_bitmap(p->bitmap_res);

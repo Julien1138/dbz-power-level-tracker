@@ -32,15 +32,9 @@ static void apply_bardock_expr(CharacterState state)
 {
   switch (state)
   {
-  case CharacterStateTransforming:
-    bardock_set_expr(2);
-    break;
-  case CharacterStateSuper:
-    bardock_set_expr(1);
-    break;
-  case CharacterStateNormal:
-    bardock_set_expr(0);
-    break;
+  case CharacterStateTransforming: break; // handled per-phase by on_character_phase_changed
+  case CharacterStateSuper:        bardock_set_expr(1); break;
+  case CharacterStateNormal:       bardock_set_expr(0); break;
   }
 }
 
@@ -55,6 +49,11 @@ static void on_stretch_changed(bool stretching)
 static void on_character_state_changed(CharacterState state)
 {
   apply_bardock_expr(state);
+}
+
+static void on_character_phase_changed(int phase)
+{
+  bardock_set_expr(phase <= 1 ? 3 : 2);
 }
 #endif
 
@@ -126,6 +125,7 @@ static void window_load(Window *window)
 #ifdef SHOW_BARDOCK
   character_set_stretch_listener(on_stretch_changed);
   character_set_state_listener(on_character_state_changed);
+  character_set_phase_listener(on_character_phase_changed);
 #endif
 
   time_t now = time(NULL);
