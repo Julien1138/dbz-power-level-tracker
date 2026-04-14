@@ -209,6 +209,78 @@
           ]
         },
         {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR1",
+          "file": "bardock_expr1_basalt.png",
+          "targetPlatforms": ["aplite", "basalt", "diorite", "flint"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR1",
+          "file": "bardock_expr1_chalk.png",
+          "targetPlatforms": ["chalk"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR1",
+          "file": "bardock_expr1_emery.png",
+          "targetPlatforms": ["emery"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR1",
+          "file": "bardock_expr1_gabbro.png",
+          "targetPlatforms": ["gabbro"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR2",
+          "file": "bardock_expr2_basalt.png",
+          "targetPlatforms": ["aplite", "basalt", "diorite", "flint"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR2",
+          "file": "bardock_expr2_chalk.png",
+          "targetPlatforms": ["chalk"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR2",
+          "file": "bardock_expr2_emery.png",
+          "targetPlatforms": ["emery"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR2",
+          "file": "bardock_expr2_gabbro.png",
+          "targetPlatforms": ["gabbro"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR3",
+          "file": "bardock_expr3_basalt.png",
+          "targetPlatforms": ["aplite", "basalt", "diorite", "flint"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR3",
+          "file": "bardock_expr3_chalk.png",
+          "targetPlatforms": ["chalk"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR3",
+          "file": "bardock_expr3_emery.png",
+          "targetPlatforms": ["emery"]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BARDOCK_EXPR3",
+          "file": "bardock_expr3_gabbro.png",
+          "targetPlatforms": ["gabbro"]
+        },
+        {
           "type": "font",
           "name": "FONT_DIGITALIX_6",
           "file": "digitalix.ttf"
