@@ -18,7 +18,8 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 
 ## Credits
 
-- Sprites and background images: [Sprite Database — Dragon Ball Z](https://spritedatabase.net/game/383)
+- Sprites and background images: [Sprite Database -- Dragon Ball Z](https://spritedatabase.net/game/383)
+- Bardock expressions : [Spriters Resource -- Dragon Ball Customs](https://www.spriters-resource.com/custom_edited/dragonballcustoms/asset/16602/)
 
 ## Future Evolutions
 
