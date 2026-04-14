@@ -165,11 +165,24 @@ static AppTimer *s_stretch_timer;
 static int s_stretch_idx;
 static const uint32_t *s_stretch_frames; // points to STRETCH_FRAMES or STRETCH_SS_FRAMES
 static CharacterStretchListener s_stretch_listener;
+static CharacterStateListener s_state_listener;
 
 // ── Public listener registration ─────────────────────────────────────────────
+CharacterState character_get_state(void)
+{
+  if (s_phase_idx < 0)           return CharacterStateNormal;
+  if (s_phase_idx < PHASE_COUNT) return CharacterStateTransforming;
+  return CharacterStateSuper;
+}
+
 void character_set_stretch_listener(CharacterStretchListener listener)
 {
   s_stretch_listener = listener;
+}
+
+void character_set_state_listener(CharacterStateListener listener)
+{
+  s_state_listener = listener;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -198,6 +211,7 @@ static void advance_phase(void *context)
   {
     s_was_super = true;
     persist_write_bool(PERSIST_KEY_SUPER, true);
+    if (s_state_listener) s_state_listener(CharacterStateSuper);
   }
 }
 
@@ -305,10 +319,12 @@ void character_set_super(bool super)
       {
         set_bitmap(RESOURCE_ID_IMAGE_GOKU_SS_STILL);
         s_phase_idx = PHASE_COUNT;
+        if (s_state_listener) s_state_listener(CharacterStateSuper);
       }
     }
     else if (s_phase_idx == -1)
     {
+      if (s_state_listener) s_state_listener(CharacterStateTransforming);
       enter_phase(0); // first time crossing the threshold — play the full animation
     }
     // else: animation already running or complete this session — nothing to do
@@ -325,6 +341,7 @@ void character_set_super(bool super)
     persist_write_bool(PERSIST_KEY_SUPER, false);
     s_phase_idx = -1;
     set_bitmap(RESOURCE_ID_IMAGE_GOKU_STILL);
+    if (s_state_listener) s_state_listener(CharacterStateNormal);
   }
 }
 

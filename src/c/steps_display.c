@@ -30,6 +30,7 @@ void steps_display_update(void)
 {
 #if defined(PBL_HEALTH)
   HealthValue steps = health_service_sum_today(HealthMetricStepCount);
+  // steps = 7500; // For testing: simulate 7500 steps to trigger the Super Saiyan transformation.
   snprintf(s_buf, sizeof(s_buf), "%05d", (int)steps);
   if (s_callback)
     s_callback((int)steps);

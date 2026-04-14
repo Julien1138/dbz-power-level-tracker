@@ -28,9 +28,33 @@ static void on_steps_updated(int steps)
 }
 
 #ifdef SHOW_BARDOCK
+static void apply_bardock_expr(CharacterState state)
+{
+  switch (state)
+  {
+  case CharacterStateTransforming:
+    bardock_set_expr(2);
+    break;
+  case CharacterStateSuper:
+    bardock_set_expr(1);
+    break;
+  case CharacterStateNormal:
+    bardock_set_expr(0);
+    break;
+  }
+}
+
 static void on_stretch_changed(bool stretching)
 {
-  bardock_set_expr(stretching ? 1 : 0);
+  if (stretching)
+    bardock_set_expr(3);
+  else
+    apply_bardock_expr(character_get_state());
+}
+
+static void on_character_state_changed(CharacterState state)
+{
+  apply_bardock_expr(state);
 }
 #endif
 
@@ -101,6 +125,7 @@ static void window_load(Window *window)
   steps_display_set_callback(on_steps_updated);
 #ifdef SHOW_BARDOCK
   character_set_stretch_listener(on_stretch_changed);
+  character_set_state_listener(on_character_state_changed);
 #endif
 
   time_t now = time(NULL);
