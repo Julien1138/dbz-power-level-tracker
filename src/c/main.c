@@ -84,6 +84,8 @@ static void window_load(Window *window)
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
   tick_handler(t, MINUTE_UNIT);
+
+  // app_timer_register(2000, (AppTimerCallback)character_tap, NULL); // For Screenshot: simulate a tap after 2s to show the character stretching.
 }
 
 static void window_unload(Window *window)
