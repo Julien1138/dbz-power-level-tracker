@@ -8,7 +8,7 @@
   "private": true,
   "dependencies": {},
   "pebble": {
-    "displayName": "DBZ Power Level",
+    "displayName": "DBZ Power Level Tracker",
     "uuid": "397560af-d398-4e64-9b5e-9a43df693137",
     "sdkVersion": "3",
     "enableMultiJS": true,
