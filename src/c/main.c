@@ -40,6 +40,11 @@ static void bt_handler(bool connected)
     vibes_short_pulse();
 }
 
+static void tap_handler(AccelAxisType axis, int32_t direction)
+{
+  character_tap();
+}
+
 static void battery_handler(BatteryChargeState state)
 {
 #ifdef SHOW_BATTERY
@@ -125,6 +130,7 @@ static void init(void)
   window_stack_push(s_window, true);
 
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+  accel_tap_service_subscribe(tap_handler);
   connection_service_subscribe((ConnectionHandlers){
       .pebble_app_connection_handler = bt_handler,
   });
@@ -137,6 +143,7 @@ static void init(void)
 static void deinit(void)
 {
   tick_timer_service_unsubscribe();
+  accel_tap_service_unsubscribe();
   connection_service_unsubscribe();
   battery_state_service_unsubscribe();
   window_destroy(s_window);

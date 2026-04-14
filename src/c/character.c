@@ -106,6 +106,53 @@ static const Phase PHASES[] = {
 // are not enough. Use Pebble's persistent storage to remember the super state.
 #define PERSIST_KEY_SUPER 1
 
+// ── Stretching animation ──────────────────────────────────────────────────────
+#define STRETCH_FRAME_MS 200      // default frame duration
+#define STRETCH_FRAME_MS_LONG 400 // duration for the neutral/resting frame
+
+static const uint32_t STRETCH_FRAMES[] = {
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_1,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_2,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_3,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_2,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_3,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_1,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_2_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_3_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_2_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_3_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_STRETCHING_1,
+};
+
+static const uint32_t STRETCH_SS_FRAMES[] = {
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_1,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_2,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_3,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_2,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_3,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_1,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_2_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_3_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_2_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_3_FLIPPED,
+    RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_1,
+};
+
+static const uint32_t STRETCH_DURATIONS_MS[] = {
+    STRETCH_FRAME_MS_LONG, // STRETCHING_1 — resting pose
+    STRETCH_FRAME_MS,      // STRETCHING_2
+    STRETCH_FRAME_MS,      // STRETCHING_3
+    STRETCH_FRAME_MS,      // STRETCHING_2
+    STRETCH_FRAME_MS,      // STRETCHING_3
+    STRETCH_FRAME_MS_LONG, // STRETCHING_1 — resting pose
+    STRETCH_FRAME_MS,      // STRETCHING_2_FLIPPED
+    STRETCH_FRAME_MS,      // STRETCHING_3_FLIPPED
+    STRETCH_FRAME_MS,      // STRETCHING_2_FLIPPED
+    STRETCH_FRAME_MS,      // STRETCHING_3_FLIPPED
+    STRETCH_FRAME_MS_LONG, // STRETCHING_1 — resting pose
+};
+#define STRETCH_FRAME_COUNT ((int)ARRAY_LENGTH(STRETCH_FRAMES))
+
 // ── State ─────────────────────────────────────────────────────────────────────
 static BitmapLayer *s_layer;
 static GBitmap *s_bitmap;
@@ -114,6 +161,9 @@ static int s_phase_idx; // -1=idle, 0..N-1=active, N=complete
 static int s_blink_idx;
 static bool s_showing_next;
 static bool s_was_super; // loaded from persistent storage on create
+static AppTimer *s_stretch_timer;
+static int s_stretch_idx;
+static const uint32_t *s_stretch_frames; // points to STRETCH_FRAMES or STRETCH_SS_FRAMES
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 static void enter_phase(int idx); // forward declaration
@@ -195,6 +245,30 @@ static void enter_phase(int idx)
   }
 }
 
+// ── Stretching callbacks ──────────────────────────────────────────────────────
+static void stretch_tick(void *context)
+{
+  s_stretch_timer = NULL;
+  s_stretch_idx++;
+  if (s_stretch_idx == 0)
+  {
+    // Initial delay elapsed — show first frame and schedule its duration
+    set_bitmap(s_stretch_frames[0]);
+    s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[0], stretch_tick, NULL);
+    return;
+  }
+  if (s_stretch_idx >= STRETCH_FRAME_COUNT)
+  {
+    // Return to the correct idle bitmap
+    uint32_t idle = (s_phase_idx == PHASE_COUNT) ? RESOURCE_ID_IMAGE_GOKU_SS_STILL
+                                                 : RESOURCE_ID_IMAGE_GOKU_STILL;
+    set_bitmap(idle);
+    return;
+  }
+  set_bitmap(s_stretch_frames[s_stretch_idx]);
+  s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[s_stretch_idx], stretch_tick, NULL);
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 void character_create(Layer *root)
 {
@@ -245,10 +319,30 @@ void character_set_super(bool super)
   }
 }
 
+void character_tap(void)
+{
+  // Don't interrupt an ongoing transformation
+  if (s_phase_idx >= 0 && s_phase_idx < PHASE_COUNT)
+    return;
+
+  // Restart if already stretching
+  if (s_stretch_timer)
+  {
+    app_timer_cancel(s_stretch_timer);
+    s_stretch_timer = NULL;
+  }
+
+  s_stretch_frames = (s_phase_idx == PHASE_COUNT) ? STRETCH_SS_FRAMES : STRETCH_FRAMES;
+  s_stretch_idx = -1;
+  s_stretch_timer = app_timer_register(500, stretch_tick, NULL);
+}
+
 void character_destroy(void)
 {
   if (s_timer)
     app_timer_cancel(s_timer);
+  if (s_stretch_timer)
+    app_timer_cancel(s_stretch_timer);
   vibes_cancel();
   bitmap_layer_destroy(s_layer);
   gbitmap_destroy(s_bitmap);

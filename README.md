@@ -6,6 +6,7 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 
 - Step count displayed as a power level in bright green (black on B&W devices)
 - Goku transforms to Super Saiyan at 7,000 steps, with a multi-phase animation and vibration sequence
+- Goku plays a stretching animation when you shake your wrist
 - Clock display with system time format (12h / 24h)
 - Date display
 - Battery level indicator with color-coded bar (green / yellow / red)
@@ -25,7 +26,6 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 - [ ] Make steps threshold for transformation configurable
 - [ ] Multiple configurable backgrounds
 - [ ] Multiple configurable characters
-- [ ] Character movement when shaking wrist or walking
 - [ ] Colors configuration
 - [ ] Weather info
 - [ ] Play transformation sound on pebbles with speaker

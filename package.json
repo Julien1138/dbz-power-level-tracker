@@ -1,7 +1,7 @@
 {
   "name": "dbz-power-level-tracker",
   "author": "Julien1138",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "pebble-app"
   ],
@@ -122,6 +122,56 @@
           "type": "bitmap",
           "name": "IMAGE_GOKU_TO_SS_2",
           "file": "goku_to_ss_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_STRETCHING_1",
+          "file": "goku_stretching_1.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_STRETCHING_2",
+          "file": "goku_stretching_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_STRETCHING_3",
+          "file": "goku_stretching_3.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_STRETCHING_2_FLIPPED",
+          "file": "goku_stretching_2_flipped.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_STRETCHING_3_FLIPPED",
+          "file": "goku_stretching_3_flipped.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_SS_STRETCHING_1",
+          "file": "goku_ss_stretching_1.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_SS_STRETCHING_2",
+          "file": "goku_ss_stretching_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_SS_STRETCHING_3",
+          "file": "goku_ss_stretching_3.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_SS_STRETCHING_2_FLIPPED",
+          "file": "goku_ss_stretching_2_flipped.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_GOKU_SS_STRETCHING_3_FLIPPED",
+          "file": "goku_ss_stretching_3_flipped.png"
         },
         {
           "type": "bitmap",
