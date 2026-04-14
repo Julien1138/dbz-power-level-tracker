@@ -1,4 +1,5 @@
 #include "character.h"
+#include "bardock.h"
 
 // ── Position ──────────────────────────────────────────────────────────────────
 #if defined(PBL_PLATFORM_EMERY)
@@ -254,6 +255,7 @@ static void stretch_tick(void *context)
   {
     // Initial delay elapsed — show first frame and schedule its duration
     set_bitmap(s_stretch_frames[0]);
+    bardock_set_expr(1);
     s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[0], stretch_tick, NULL);
     return;
   }
@@ -263,6 +265,7 @@ static void stretch_tick(void *context)
     uint32_t idle = (s_phase_idx == PHASE_COUNT) ? RESOURCE_ID_IMAGE_GOKU_SS_STILL
                                                  : RESOURCE_ID_IMAGE_GOKU_STILL;
     set_bitmap(idle);
+    bardock_set_expr(0);
     return;
   }
   set_bitmap(s_stretch_frames[s_stretch_idx]);
@@ -330,6 +333,7 @@ void character_tap(void)
   {
     app_timer_cancel(s_stretch_timer);
     s_stretch_timer = NULL;
+    bardock_set_expr(0);
   }
 
   s_stretch_frames = (s_phase_idx == PHASE_COUNT) ? STRETCH_SS_FRAMES : STRETCH_FRAMES;
