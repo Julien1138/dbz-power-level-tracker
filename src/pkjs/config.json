@@ -1,0 +1,32 @@
+[
+  {
+    "type": "heading",
+    "defaultValue": "DBZ Power Level Tracker"
+  },
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "Power Level"
+      },
+      {
+        "type": "input",
+        "messageKey": "STEPS_THRESHOLD",
+        "label": "Super Saiyan threshold (steps)",
+        "defaultValue": "7000",
+        "description": "Number of daily steps required to trigger the Super Saiyan transformation.",
+        "attributes": {
+          "type": "number",
+          "min": "100",
+          "max": "50000",
+          "step": "100"
+        }
+      }
+    ]
+  },
+  {
+    "type": "submit",
+    "defaultValue": "Save"
+  }
+]

@@ -16,7 +16,10 @@
 #define SHOW_BARDOCK
 
 // ── Power level threshold ─────────────────────────────────────────────────────
-#define SUPER_SAIYAN_STEPS 7000
+#define STEPS_THRESHOLD_DEFAULT  7000
+#define PERSIST_KEY_STEPS_THRESHOLD 2
+
+static int s_steps_threshold = STEPS_THRESHOLD_DEFAULT;
 
 static Window *s_window;
 
@@ -24,7 +27,18 @@ static Window *s_window;
 
 static void on_steps_updated(int steps)
 {
-  character_set_super(steps >= SUPER_SAIYAN_STEPS);
+  character_set_super(steps >= s_steps_threshold);
+}
+
+static void inbox_received(DictionaryIterator *iter, void *ctx)
+{
+  Tuple *t = dict_find(iter, MESSAGE_KEY_STEPS_THRESHOLD);
+  if (t)
+  {
+    s_steps_threshold = (int)t->value->int32;
+    persist_write_int(PERSIST_KEY_STEPS_THRESHOLD, s_steps_threshold);
+    steps_display_update();
+  }
 }
 
 #ifdef SHOW_BARDOCK
@@ -170,6 +184,12 @@ static void health_handler(HealthEventType event, void *context)
 
 static void init(void)
 {
+  if (persist_exists(PERSIST_KEY_STEPS_THRESHOLD))
+    s_steps_threshold = persist_read_int(PERSIST_KEY_STEPS_THRESHOLD);
+
+  app_message_register_inbox_received(inbox_received);
+  app_message_open(64, 0);
+
   s_window = window_create();
   window_set_background_color(s_window, GColorWhite);
   window_set_window_handlers(s_window, (WindowHandlers){

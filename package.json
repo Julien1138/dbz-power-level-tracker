@@ -6,6 +6,9 @@
     "pebble-app"
   ],
   "private": true,
+  "scripts": {
+    "postinstall": "node fix-clay-platforms.js"
+  },
   "dependencies": {},
   "pebble": {
     "displayName": "DBZ Power Level Tracker",
@@ -24,7 +27,10 @@
     "watchapp": {
       "watchface": true
     },
-    "messageKeys": [],
+    "capabilities": ["configurable"],
+    "messageKeys": [
+      "STEPS_THRESHOLD"
+    ],
     "resources": {
       "media": [
         {
