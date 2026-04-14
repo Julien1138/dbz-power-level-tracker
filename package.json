@@ -29,7 +29,8 @@
     },
     "capabilities": ["configurable"],
     "messageKeys": [
-      "STEPS_THRESHOLD"
+      "STEPS_THRESHOLD",
+      "VIBE_ON_BT_DISCONNECT"
     ],
     "resources": {
       "media": [

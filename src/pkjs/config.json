@@ -26,6 +26,21 @@
     ]
   },
   {
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "Bluetooth"
+      },
+      {
+        "type": "toggle",
+        "messageKey": "VIBE_ON_BT_DISCONNECT",
+        "label": "Vibrate on disconnect",
+        "defaultValue": true
+      }
+    ]
+  },
+  {
     "type": "submit",
     "defaultValue": "Save"
   }

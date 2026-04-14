@@ -15,11 +15,15 @@
 #define SHOW_BT_DOT
 #define SHOW_BARDOCK
 
-// ── Power level threshold ─────────────────────────────────────────────────────
-#define STEPS_THRESHOLD_DEFAULT  7000
-#define PERSIST_KEY_STEPS_THRESHOLD 2
+// ── Configurable settings ─────────────────────────────────────────────────────
+#define STEPS_THRESHOLD_DEFAULT       7000
+#define VIBE_ON_BT_DISCONNECT_DEFAULT true
 
-static int s_steps_threshold = STEPS_THRESHOLD_DEFAULT;
+#define PERSIST_KEY_STEPS_THRESHOLD    2
+#define PERSIST_KEY_VIBE_ON_BT_DISCONNECT 3
+
+static int  s_steps_threshold      = STEPS_THRESHOLD_DEFAULT;
+static bool s_vibe_on_bt_disconnect = VIBE_ON_BT_DISCONNECT_DEFAULT;
 
 static Window *s_window;
 
@@ -32,12 +36,21 @@ static void on_steps_updated(int steps)
 
 static void inbox_received(DictionaryIterator *iter, void *ctx)
 {
-  Tuple *t = dict_find(iter, MESSAGE_KEY_STEPS_THRESHOLD);
+  Tuple *t;
+
+  t = dict_find(iter, MESSAGE_KEY_STEPS_THRESHOLD);
   if (t)
   {
     s_steps_threshold = (int)t->value->int32;
     persist_write_int(PERSIST_KEY_STEPS_THRESHOLD, s_steps_threshold);
     steps_display_update();
+  }
+
+  t = dict_find(iter, MESSAGE_KEY_VIBE_ON_BT_DISCONNECT);
+  if (t)
+  {
+    s_vibe_on_bt_disconnect = (bool)t->value->int32;
+    persist_write_bool(PERSIST_KEY_VIBE_ON_BT_DISCONNECT, s_vibe_on_bt_disconnect);
   }
 }
 
@@ -90,7 +103,7 @@ static void bt_handler(bool connected)
 #ifdef SHOW_BT_DOT
   bt_layer_mark_dirty();
 #endif
-  if (!connected)
+  if (!connected && s_vibe_on_bt_disconnect)
     vibes_short_pulse();
 }
 
@@ -186,6 +199,8 @@ static void init(void)
 {
   if (persist_exists(PERSIST_KEY_STEPS_THRESHOLD))
     s_steps_threshold = persist_read_int(PERSIST_KEY_STEPS_THRESHOLD);
+  if (persist_exists(PERSIST_KEY_VIBE_ON_BT_DISCONNECT))
+    s_vibe_on_bt_disconnect = persist_read_bool(PERSIST_KEY_VIBE_ON_BT_DISCONNECT);
 
   app_message_register_inbox_received(inbox_received);
   app_message_open(64, 0);
