@@ -2,17 +2,17 @@
 
 // ── Position ──────────────────────────────────────────────────────────────────
 #if defined(PBL_PLATFORM_EMERY)
-#define CHARACTER_X 133
-#define CHARACTER_Y 50
+#define CHARACTER_X 118
+#define CHARACTER_Y 48
 #elif defined(PBL_PLATFORM_GABBRO)
-#define CHARACTER_X 168
-#define CHARACTER_Y 75
+#define CHARACTER_X 153
+#define CHARACTER_Y 73
 #elif defined(PBL_PLATFORM_CHALK)
-#define CHARACTER_X 103
-#define CHARACTER_Y 30
+#define CHARACTER_X 88
+#define CHARACTER_Y 28
 #else
-#define CHARACTER_X 83
-#define CHARACTER_Y 20
+#define CHARACTER_X 68
+#define CHARACTER_Y 18
 #endif
 
 // ── Vibration patterns ────────────────────────────────────────────────────────
