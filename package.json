@@ -1,7 +1,7 @@
 {
   "name": "dbz-power-level-tracker",
   "author": "Julien1138",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "keywords": [
     "pebble-app"
   ],
@@ -27,7 +27,9 @@
     "watchapp": {
       "watchface": true
     },
-    "capabilities": ["configurable"],
+    "capabilities": [
+      "configurable"
+    ],
     "messageKeys": [
       "STEPS_THRESHOLD",
       "VIBE_ON_BT_DISCONNECT"
