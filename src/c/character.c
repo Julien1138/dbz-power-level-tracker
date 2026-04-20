@@ -338,6 +338,8 @@ void character_set_super(bool super)
   }
   else
   {
+    if (s_phase_idx == -1 && !s_was_super)
+      return; // already in normal state — nothing to do
     if (s_timer)
     {
       app_timer_cancel(s_timer);

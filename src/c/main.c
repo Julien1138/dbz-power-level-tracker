@@ -41,7 +41,7 @@ static void inbox_received(DictionaryIterator *iter, void *ctx)
   t = dict_find(iter, MESSAGE_KEY_STEPS_THRESHOLD);
   if (t)
   {
-    s_steps_threshold = (int)t->value->int32;
+    s_steps_threshold = (t->type == TUPLE_CSTRING) ? atoi(t->value->cstring) : (int)t->value->int32;
     persist_write_int(PERSIST_KEY_STEPS_THRESHOLD, s_steps_threshold);
     steps_display_update();
   }
@@ -49,7 +49,7 @@ static void inbox_received(DictionaryIterator *iter, void *ctx)
   t = dict_find(iter, MESSAGE_KEY_VIBE_ON_BT_DISCONNECT);
   if (t)
   {
-    s_vibe_on_bt_disconnect = (bool)t->value->int32;
+    s_vibe_on_bt_disconnect = (t->type == TUPLE_CSTRING) ? (atoi(t->value->cstring) != 0) : (bool)t->value->int32;
     persist_write_bool(PERSIST_KEY_VIBE_ON_BT_DISCONNECT, s_vibe_on_bt_disconnect);
   }
 }
