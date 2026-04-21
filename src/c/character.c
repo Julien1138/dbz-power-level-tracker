@@ -104,7 +104,16 @@ static const Phase PHASES[] = {
 // ── Persistence ───────────────────────────────────────────────────────────────
 // The watchface is killed and restarted on every menu navigation, so C statics
 // are not enough. Use Pebble's persistent storage to remember the super state.
+// PERSIST_KEY_SUPER stores today_key() when super, 0 otherwise — one value
+// encodes both state and day, so stale data from a previous day is ignored.
 #define PERSIST_KEY_SUPER 1
+
+static int today_key(void)
+{
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);
+  return t->tm_yday + t->tm_year * 366 + 1; // +1 so result is always non-zero
+}
 
 // ── Stretching animation ──────────────────────────────────────────────────────
 #define STRETCH_FRAME_MS 200      // default frame duration
@@ -216,7 +225,7 @@ static void advance_phase(void *context)
   else
   {
     s_was_super = true;
-    persist_write_bool(PERSIST_KEY_SUPER, true);
+    persist_write_int(PERSIST_KEY_SUPER, today_key());
     if (s_state_listener) s_state_listener(CharacterStateSuper);
   }
 }
@@ -312,7 +321,8 @@ void character_create(Layer *root)
 
   s_phase_idx = -1; // idle
   s_timer = NULL;
-  s_was_super = persist_exists(PERSIST_KEY_SUPER) && persist_read_bool(PERSIST_KEY_SUPER);
+  s_was_super = persist_exists(PERSIST_KEY_SUPER) &&
+                persist_read_int(PERSIST_KEY_SUPER) == today_key();
 }
 
 void character_set_super(bool super)
@@ -347,7 +357,7 @@ void character_set_super(bool super)
     }
     vibes_cancel();
     s_was_super = false;
-    persist_write_bool(PERSIST_KEY_SUPER, false);
+    persist_write_int(PERSIST_KEY_SUPER, 0);
     s_phase_idx = -1;
     set_bitmap(RESOURCE_ID_IMAGE_GOKU_STILL);
     if (s_state_listener) s_state_listener(CharacterStateNormal);
