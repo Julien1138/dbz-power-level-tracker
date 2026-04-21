@@ -6,9 +6,7 @@
     "pebble-app"
   ],
   "private": true,
-  "scripts": {
-    "postinstall": "node fix-clay-platforms.js"
-  },
+  "scripts": {},
   "dependencies": {},
   "pebble": {
     "displayName": "DBZ Power Level Tracker",
