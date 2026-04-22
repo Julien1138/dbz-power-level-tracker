@@ -9,6 +9,7 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 - Character transforms to Super Saiyan at the configured step threshold, with a multi-phase animation and vibration sequence
 - Goku plays a stretching animation on wrist shake; Vegeta throws punches
 - Configurable Super Saiyan step threshold (default: 7,000 steps)
+- Transformation vibration configurable; automatically suppressed when charging or in silent mode
 - Clock display with system time format (12h / 24h)
 - Date display
 - Battery level indicator with color-coded bar (green / yellow / red)
@@ -21,6 +22,7 @@ Open the Pebble app and tap the settings icon on the watchface to configure:
 
 - **Character** — Goku or Vegeta
 - **Super Saiyan threshold** — daily steps required to trigger the transformation
+- **Vibrate on transformation** — toggle transformation vibration (always off when charging or in silent mode)
 - **Vibrate on disconnect** — toggle vibration when Bluetooth disconnects
 
 ## Inspiration
