@@ -132,6 +132,11 @@
         },
         {
           "type": "bitmap",
+          "name": "IMAGE_GOKU_TO_SS_3",
+          "file": "goku_to_ss_3.png"
+        },
+        {
+          "type": "bitmap",
           "name": "IMAGE_GOKU_STRETCHING_1",
           "file": "goku_stretching_1.png"
         },

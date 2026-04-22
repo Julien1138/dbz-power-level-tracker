@@ -77,7 +77,7 @@ static const Phase PHASES[] = {
         // ── Explosion ─────────────────────────────────────────────────────────────
         // Power bursts through. Heavy impact vibration.
         .bitmap_res = RESOURCE_ID_IMAGE_GOKU_TO_SS_2,
-        .next_bitmap_res = RESOURCE_ID_IMAGE_GOKU_SS_STILL,
+        .next_bitmap_res = RESOURCE_ID_IMAGE_GOKU_TO_SS_3,
         .blink_on_ms = BLINK_ON,
         .blink_off_ms = BLINK_OFF,
         .blink_count = ARRAY_LENGTH(BLINK_ON),
@@ -88,7 +88,7 @@ static const Phase PHASES[] = {
     {
         // ── Stabilisation ─────────────────────────────────────────────────────────
         // Final state locked in. Powerful, settled vibration.
-        .bitmap_res = RESOURCE_ID_IMAGE_GOKU_SS_STILL,
+        .bitmap_res = RESOURCE_ID_IMAGE_GOKU_TO_SS_3,
         .next_bitmap_res = 0,
         .blink_on_ms = NULL,
         .blink_off_ms = NULL,
@@ -180,8 +180,10 @@ static CharacterPhaseListener s_phase_listener;
 // ── Public listener registration ─────────────────────────────────────────────
 CharacterState character_get_state(void)
 {
-  if (s_phase_idx < 0)           return CharacterStateNormal;
-  if (s_phase_idx < PHASE_COUNT) return CharacterStateTransforming;
+  if (s_phase_idx < 0)
+    return CharacterStateNormal;
+  if (s_phase_idx < PHASE_COUNT)
+    return CharacterStateTransforming;
   return CharacterStateSuper;
 }
 
@@ -224,9 +226,11 @@ static void advance_phase(void *context)
     enter_phase(s_phase_idx);
   else
   {
+    set_bitmap(RESOURCE_ID_IMAGE_GOKU_SS_STILL);
     s_was_super = true;
     persist_write_int(PERSIST_KEY_SUPER, today_key());
-    if (s_state_listener) s_state_listener(CharacterStateSuper);
+    if (s_state_listener)
+      s_state_listener(CharacterStateSuper);
   }
 }
 
@@ -261,7 +265,8 @@ static void blink_tick(void *context)
 static void enter_phase(int idx)
 {
   s_phase_idx = idx;
-  if (s_phase_listener) s_phase_listener(idx);
+  if (s_phase_listener)
+    s_phase_listener(idx);
   const Phase *p = &PHASES[idx];
 
   set_bitmap(p->bitmap_res);
@@ -291,7 +296,8 @@ static void stretch_tick(void *context)
   {
     // Initial delay elapsed — show first frame and schedule its duration
     set_bitmap(s_stretch_frames[0]);
-    if (s_stretch_listener) s_stretch_listener(true);
+    if (s_stretch_listener)
+      s_stretch_listener(true);
     s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[0], stretch_tick, NULL);
     return;
   }
@@ -301,7 +307,8 @@ static void stretch_tick(void *context)
     uint32_t idle = (s_phase_idx == PHASE_COUNT) ? RESOURCE_ID_IMAGE_GOKU_SS_STILL
                                                  : RESOURCE_ID_IMAGE_GOKU_STILL;
     set_bitmap(idle);
-    if (s_stretch_listener) s_stretch_listener(false);
+    if (s_stretch_listener)
+      s_stretch_listener(false);
     return;
   }
   set_bitmap(s_stretch_frames[s_stretch_idx]);
@@ -336,12 +343,14 @@ void character_set_super(bool super)
       {
         set_bitmap(RESOURCE_ID_IMAGE_GOKU_SS_STILL);
         s_phase_idx = PHASE_COUNT;
-        if (s_state_listener) s_state_listener(CharacterStateSuper);
+        if (s_state_listener)
+          s_state_listener(CharacterStateSuper);
       }
     }
     else if (s_phase_idx == -1)
     {
-      if (s_state_listener) s_state_listener(CharacterStateTransforming);
+      if (s_state_listener)
+        s_state_listener(CharacterStateTransforming);
       enter_phase(0); // first time crossing the threshold — play the full animation
     }
     // else: animation already running or complete this session — nothing to do
@@ -360,7 +369,8 @@ void character_set_super(bool super)
     persist_write_int(PERSIST_KEY_SUPER, 0);
     s_phase_idx = -1;
     set_bitmap(RESOURCE_ID_IMAGE_GOKU_STILL);
-    if (s_state_listener) s_state_listener(CharacterStateNormal);
+    if (s_state_listener)
+      s_state_listener(CharacterStateNormal);
   }
 }
 
@@ -375,7 +385,8 @@ void character_tap(void)
   {
     app_timer_cancel(s_stretch_timer);
     s_stretch_timer = NULL;
-    if (s_stretch_listener) s_stretch_listener(false);
+    if (s_stretch_listener)
+      s_stretch_listener(false);
   }
 
   s_stretch_frames = (s_phase_idx == PHASE_COUNT) ? STRETCH_SS_FRAMES : STRETCH_FRAMES;
