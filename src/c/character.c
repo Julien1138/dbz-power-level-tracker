@@ -115,9 +115,9 @@ static int today_key(void)
   return t->tm_yday + t->tm_year * 366 + 1; // +1 so result is always non-zero
 }
 
-// ── Stretching animation ──────────────────────────────────────────────────────
-#define STRETCH_FRAME_MS 200      // default frame duration
-#define STRETCH_FRAME_MS_LONG 400 // duration for the neutral/resting frame
+// ── Goku: stretching animation ────────────────────────────────────────────────
+#define STRETCH_FRAME_MS 200
+#define STRETCH_FRAME_MS_LONG 400
 
 static const uint32_t STRETCH_FRAMES[] = {
     RESOURCE_ID_IMAGE_GOKU_STRETCHING_1,
@@ -132,7 +132,6 @@ static const uint32_t STRETCH_FRAMES[] = {
     RESOURCE_ID_IMAGE_GOKU_STRETCHING_3_FLIPPED,
     RESOURCE_ID_IMAGE_GOKU_STRETCHING_1,
 };
-
 static const uint32_t STRETCH_SS_FRAMES[] = {
     RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_1,
     RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_2,
@@ -146,21 +145,100 @@ static const uint32_t STRETCH_SS_FRAMES[] = {
     RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_3_FLIPPED,
     RESOURCE_ID_IMAGE_GOKU_SS_STRETCHING_1,
 };
-
 static const uint32_t STRETCH_DURATIONS_MS[] = {
-    STRETCH_FRAME_MS_LONG, // STRETCHING_1 — resting pose
-    STRETCH_FRAME_MS,      // STRETCHING_2
-    STRETCH_FRAME_MS,      // STRETCHING_3
-    STRETCH_FRAME_MS,      // STRETCHING_2
-    STRETCH_FRAME_MS,      // STRETCHING_3
-    STRETCH_FRAME_MS_LONG, // STRETCHING_1 — resting pose
-    STRETCH_FRAME_MS,      // STRETCHING_2_FLIPPED
-    STRETCH_FRAME_MS,      // STRETCHING_3_FLIPPED
-    STRETCH_FRAME_MS,      // STRETCHING_2_FLIPPED
-    STRETCH_FRAME_MS,      // STRETCHING_3_FLIPPED
-    STRETCH_FRAME_MS_LONG, // STRETCHING_1 — resting pose
+    STRETCH_FRAME_MS_LONG,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS_LONG,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS,
+    STRETCH_FRAME_MS_LONG,
 };
 #define STRETCH_FRAME_COUNT ((int)ARRAY_LENGTH(STRETCH_FRAMES))
+
+// ── Vegeta: transformation phases ────────────────────────────────────────────
+// No TO_SS_3 — explosion phase reuses TO_SS_2/TO_SS_1 blink.
+static const Phase PHASES_VEGETA[] = {
+    {
+        .bitmap_res = RESOURCE_ID_IMAGE_VEGETA_STILL,
+        .next_bitmap_res = 0,
+        .blink_on_ms = NULL,
+        .blink_off_ms = NULL,
+        .blink_count = 0,
+        .vibe = VIBE_TENSION,
+        .vibe_count = ARRAY_LENGTH(VIBE_TENSION),
+        .duration_ms = 2800,
+    },
+    {
+        .bitmap_res = RESOURCE_ID_IMAGE_VEGETA_TO_SS_1,
+        .next_bitmap_res = RESOURCE_ID_IMAGE_VEGETA_TO_SS_2,
+        .blink_on_ms = BLINK_ON,
+        .blink_off_ms = BLINK_OFF,
+        .blink_count = ARRAY_LENGTH(BLINK_ON),
+        .vibe = VIBE_BUILDING,
+        .vibe_count = ARRAY_LENGTH(VIBE_BUILDING),
+        .duration_ms = 300,
+    },
+    {
+        // No TO_SS_3 — blink TO_SS_2 ↔ TO_SS_1 (reversed) for visual variation
+        .bitmap_res = RESOURCE_ID_IMAGE_VEGETA_TO_SS_2,
+        .next_bitmap_res = RESOURCE_ID_IMAGE_VEGETA_TO_SS_1,
+        .blink_on_ms = BLINK_ON,
+        .blink_off_ms = BLINK_OFF,
+        .blink_count = ARRAY_LENGTH(BLINK_ON),
+        .vibe = VIBE_EXPLOSION,
+        .vibe_count = ARRAY_LENGTH(VIBE_EXPLOSION),
+        .duration_ms = 300,
+    },
+    {
+        .bitmap_res = RESOURCE_ID_IMAGE_VEGETA_TO_SS_2,
+        .next_bitmap_res = 0,
+        .blink_on_ms = NULL,
+        .blink_off_ms = NULL,
+        .blink_count = 0,
+        .vibe = VIBE_POWER,
+        .vibe_count = ARRAY_LENGTH(VIBE_POWER),
+        .duration_ms = 2500,
+    },
+};
+
+// ── Vegeta: punching animation ────────────────────────────────────────────────
+// Sequence: 1, 2, 3, 2, 3, 1
+#define PUNCH_FRAME_MS 150
+#define PUNCH_FRAME_MS_LONG 350
+
+static const uint32_t PUNCH_FRAMES[] = {
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_1,
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_2,
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_3,
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_1,
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_2,
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_3,
+    RESOURCE_ID_IMAGE_VEGETA_PUNCHING_1,
+};
+static const uint32_t PUNCH_SS_FRAMES[] = {
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_1,
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_2,
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_3,
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_1,
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_2,
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_3,
+    RESOURCE_ID_IMAGE_VEGETA_SS_PUNCHING_1,
+};
+static const uint32_t PUNCH_DURATIONS_MS[] = {
+    PUNCH_FRAME_MS_LONG,
+    PUNCH_FRAME_MS,
+    PUNCH_FRAME_MS,
+    PUNCH_FRAME_MS_LONG,
+    PUNCH_FRAME_MS,
+    PUNCH_FRAME_MS,
+    PUNCH_FRAME_MS_LONG,
+};
+#define PUNCH_FRAME_COUNT ((int)ARRAY_LENGTH(PUNCH_FRAMES))
 
 // ── State ─────────────────────────────────────────────────────────────────────
 static BitmapLayer *s_layer;
@@ -169,13 +247,50 @@ static AppTimer *s_timer;
 static int s_phase_idx; // -1=idle, 0..N-1=active, N=complete
 static int s_blink_idx;
 static bool s_showing_next;
-static bool s_was_super; // loaded from persistent storage on create
+static bool s_was_super;
 static AppTimer *s_stretch_timer;
 static int s_stretch_idx;
-static const uint32_t *s_stretch_frames; // points to STRETCH_FRAMES or STRETCH_SS_FRAMES
+static const uint32_t *s_tap_frames_normal; // tap frames for normal state
+static const uint32_t *s_tap_frames_ss;     // tap frames for super state
+static const uint32_t *s_stretch_frames;    // current animation frames (set in character_tap)
+static const uint32_t *s_tap_durations;     // frame durations
+static int s_tap_frame_count;
+static const Phase *s_phases; // PHASES or PHASES_VEGETA
+static bool s_is_vegeta;
 static CharacterStretchListener s_stretch_listener;
 static CharacterStateListener s_state_listener;
 static CharacterPhaseListener s_phase_listener;
+
+// ── Character helpers ─────────────────────────────────────────────────────────
+static uint32_t idle_res(void)
+{
+  return s_is_vegeta ? RESOURCE_ID_IMAGE_VEGETA_STILL : RESOURCE_ID_IMAGE_GOKU_STILL;
+}
+
+static uint32_t ss_res(void)
+{
+  return s_is_vegeta ? RESOURCE_ID_IMAGE_VEGETA_SS_STILL : RESOURCE_ID_IMAGE_GOKU_SS_STILL;
+}
+
+static void apply_character(void)
+{
+  if (s_is_vegeta)
+  {
+    s_phases = PHASES_VEGETA;
+    s_tap_frames_normal = PUNCH_FRAMES;
+    s_tap_frames_ss = PUNCH_SS_FRAMES;
+    s_tap_durations = PUNCH_DURATIONS_MS;
+    s_tap_frame_count = PUNCH_FRAME_COUNT;
+  }
+  else
+  {
+    s_phases = PHASES;
+    s_tap_frames_normal = STRETCH_FRAMES;
+    s_tap_frames_ss = STRETCH_SS_FRAMES;
+    s_tap_durations = STRETCH_DURATIONS_MS;
+    s_tap_frame_count = STRETCH_FRAME_COUNT;
+  }
+}
 
 // ── Public listener registration ─────────────────────────────────────────────
 CharacterState character_get_state(void)
@@ -226,7 +341,7 @@ static void advance_phase(void *context)
     enter_phase(s_phase_idx);
   else
   {
-    set_bitmap(RESOURCE_ID_IMAGE_GOKU_SS_STILL);
+    set_bitmap(ss_res());
     s_was_super = true;
     persist_write_int(PERSIST_KEY_SUPER, today_key());
     if (s_state_listener)
@@ -237,7 +352,7 @@ static void advance_phase(void *context)
 static void blink_tick(void *context)
 {
   s_timer = NULL;
-  const Phase *p = &PHASES[s_phase_idx];
+  const Phase *p = &s_phases[s_phase_idx];
 
   if (!s_showing_next)
   {
@@ -267,7 +382,7 @@ static void enter_phase(int idx)
   s_phase_idx = idx;
   if (s_phase_listener)
     s_phase_listener(idx);
-  const Phase *p = &PHASES[idx];
+  const Phase *p = &s_phases[idx];
 
   set_bitmap(p->bitmap_res);
   if (p->vibe)
@@ -298,27 +413,25 @@ static void stretch_tick(void *context)
     set_bitmap(s_stretch_frames[0]);
     if (s_stretch_listener)
       s_stretch_listener(true);
-    s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[0], stretch_tick, NULL);
+    s_stretch_timer = app_timer_register(s_tap_durations[0], stretch_tick, NULL);
     return;
   }
-  if (s_stretch_idx >= STRETCH_FRAME_COUNT)
+  if (s_stretch_idx >= s_tap_frame_count)
   {
-    // Return to the correct idle bitmap
-    uint32_t idle = (s_phase_idx == PHASE_COUNT) ? RESOURCE_ID_IMAGE_GOKU_SS_STILL
-                                                 : RESOURCE_ID_IMAGE_GOKU_STILL;
-    set_bitmap(idle);
+    set_bitmap((s_phase_idx == PHASE_COUNT) ? ss_res() : idle_res());
     if (s_stretch_listener)
       s_stretch_listener(false);
     return;
   }
   set_bitmap(s_stretch_frames[s_stretch_idx]);
-  s_stretch_timer = app_timer_register(STRETCH_DURATIONS_MS[s_stretch_idx], stretch_tick, NULL);
+  s_stretch_timer = app_timer_register(s_tap_durations[s_stretch_idx], stretch_tick, NULL);
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
 void character_create(Layer *root)
 {
-  s_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_GOKU_STILL);
+  apply_character();
+  s_bitmap = gbitmap_create_with_resource(idle_res());
   GSize img_size = gbitmap_get_bounds(s_bitmap).size;
 
   s_layer = bitmap_layer_create(GRect(CHARACTER_X, CHARACTER_Y, img_size.w, img_size.h));
@@ -341,7 +454,7 @@ void character_set_super(bool super)
       // Already transformed before this window load — skip animation, show final state directly
       if (s_phase_idx == -1)
       {
-        set_bitmap(RESOURCE_ID_IMAGE_GOKU_SS_STILL);
+        set_bitmap(ss_res());
         s_phase_idx = PHASE_COUNT;
         if (s_state_listener)
           s_state_listener(CharacterStateSuper);
@@ -368,7 +481,7 @@ void character_set_super(bool super)
     s_was_super = false;
     persist_write_int(PERSIST_KEY_SUPER, 0);
     s_phase_idx = -1;
-    set_bitmap(RESOURCE_ID_IMAGE_GOKU_STILL);
+    set_bitmap(idle_res());
     if (s_state_listener)
       s_state_listener(CharacterStateNormal);
   }
@@ -389,9 +502,18 @@ void character_tap(void)
       s_stretch_listener(false);
   }
 
-  s_stretch_frames = (s_phase_idx == PHASE_COUNT) ? STRETCH_SS_FRAMES : STRETCH_FRAMES;
+  s_stretch_frames = (s_phase_idx == PHASE_COUNT) ? s_tap_frames_ss : s_tap_frames_normal;
   s_stretch_idx = -1;
   s_stretch_timer = app_timer_register(500, stretch_tick, NULL);
+}
+
+void character_set_character(bool is_vegeta)
+{
+  s_is_vegeta = is_vegeta;
+  apply_character();
+  // If the layer exists and we're idle, update the displayed bitmap immediately
+  if (s_layer && s_phase_idx == -1 && !s_stretch_timer)
+    set_bitmap(idle_res());
 }
 
 void character_destroy(void)

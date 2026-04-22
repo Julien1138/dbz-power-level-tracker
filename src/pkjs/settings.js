@@ -93,6 +93,22 @@ module.exports = '<!DOCTYPE html>' +
 '.row-info .label{font-size:16px;color:#e8e8e8}' +
 '.row-info .desc{font-size:12px;color:#888;margin-top:3px}' +
 
+/* Character picker */
+'.char-picker{display:flex;gap:8px;flex-shrink:0}' +
+'.char-btn{' +
+'  background:#3a3a3c;' +
+'  border:2px solid transparent;' +
+'  border-radius:8px;' +
+'  color:#aaa;' +
+'  font-size:14px;' +
+'  font-weight:600;' +
+'  padding:6px 14px;' +
+'  cursor:pointer;' +
+'  -webkit-tap-highlight-color:transparent;' +
+'  transition:all .2s;' +
+'}' +
+'.char-btn.active{border-color:#e8500a;color:#fff;background:#2a2a2c}' +
+
 /* Toggle switch */
 '.toggle{position:relative;width:51px;height:31px;flex-shrink:0}' +
 '.toggle input{opacity:0;width:0;height:0;position:absolute}' +
@@ -142,6 +158,19 @@ module.exports = '<!DOCTYPE html>' +
 '</header>' +
 
 '<div class="section">' +
+'  <div class="section-title">Character</div>' +
+'  <div class="card">' +
+'    <div class="row">' +
+'      <div class="row-info"><div class="label">Character</div></div>' +
+'      <div class="char-picker">' +
+'        <button class="char-btn" id="btnGoku"  onclick="selectChar(0)">Goku</button>' +
+'        <button class="char-btn" id="btnVegeta" onclick="selectChar(1)">Vegeta</button>' +
+'      </div>' +
+'    </div>' +
+'  </div>' +
+'</div>' +
+
+'<div class="section">' +
 '  <div class="section-title">Power Level</div>' +
 '  <div class="card">' +
 '    <div class="row">' +
@@ -171,7 +200,7 @@ module.exports = '<!DOCTYPE html>' +
 '</div>' +
 
 '<script>' +
-'var defaults={stepsThreshold:7000,vibeOnBtDisconnect:true};' +
+'var defaults={stepsThreshold:7000,vibeOnBtDisconnect:true,character:0};' +
 'var settings=defaults;' +
 'try{' +
 '  var h=window.location.hash.slice(1);' +
@@ -181,13 +210,29 @@ module.exports = '<!DOCTYPE html>' +
 'document.getElementById("stepsThreshold").value=settings.stepsThreshold||defaults.stepsThreshold;' +
 'document.getElementById("vibeOnBtDisconnect").checked=settings.vibeOnBtDisconnect!==false;' +
 
-'function save(){' +
-'  var result={' +
-'    stepsThreshold:parseInt(document.getElementById("stepsThreshold").value,10)||defaults.stepsThreshold,' +
-'    vibeOnBtDisconnect:document.getElementById("vibeOnBtDisconnect").checked' +
-'  };' +
-'  document.location="pebblejs://close#"+encodeURIComponent(JSON.stringify(result));' +
+'var s_char=settings.character||0;' +
+'document.getElementById(s_char===1?"btnVegeta":"btnGoku").classList.add("active");' +
+
+'function selectChar(idx){' +
+'  s_char=idx;' +
+'  document.querySelectorAll(".char-btn").forEach(function(b){b.classList.remove("active");});' +
+'  document.getElementById(idx===1?"btnVegeta":"btnGoku").classList.add("active");' +
 '}' +
+
+'function collect(){' +
+'  return{' +
+'    stepsThreshold:parseInt(document.getElementById("stepsThreshold").value,10)||defaults.stepsThreshold,' +
+'    vibeOnBtDisconnect:document.getElementById("vibeOnBtDisconnect").checked,' +
+'    character:s_char' +
+'  };' +
+'}' +
+
+'function save(){' +
+'  document.location="pebblejs://close#"+encodeURIComponent(JSON.stringify(collect()));' +
+'}' +
+
+'document.getElementById("stepsThreshold").addEventListener("change",save);' +
+'document.getElementById("vibeOnBtDisconnect").addEventListener("change",save);' +
 
 'window.addEventListener("beforeunload",save);' +
 

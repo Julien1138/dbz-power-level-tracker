@@ -30,7 +30,8 @@
     ],
     "messageKeys": [
       "STEPS_THRESHOLD",
-      "VIBE_ON_BT_DISCONNECT"
+      "VIBE_ON_BT_DISCONNECT",
+      "CHARACTER"
     ],
     "resources": {
       "media": [
@@ -184,6 +185,56 @@
           "type": "bitmap",
           "name": "IMAGE_GOKU_SS_STRETCHING_3_FLIPPED",
           "file": "goku_ss_stretching_3_flipped.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_STILL",
+          "file": "vegeta_still.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_SS_STILL",
+          "file": "vegeta_ss_still.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_TO_SS_1",
+          "file": "vegeta_to_ss_1.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_TO_SS_2",
+          "file": "vegeta_to_ss_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_PUNCHING_1",
+          "file": "vegeta_punching_1.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_PUNCHING_2",
+          "file": "vegeta_punching_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_PUNCHING_3",
+          "file": "vegeta_punching_3.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_SS_PUNCHING_1",
+          "file": "vegeta_ss_punching_1.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_SS_PUNCHING_2",
+          "file": "vegeta_ss_punching_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_VEGETA_SS_PUNCHING_3",
+          "file": "vegeta_ss_punching_3.png"
         },
         {
           "type": "bitmap",
