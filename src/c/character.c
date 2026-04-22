@@ -248,6 +248,7 @@ static int s_phase_idx; // -1=idle, 0..N-1=active, N=complete
 static int s_blink_idx;
 static bool s_showing_next;
 static bool s_was_super;
+static bool s_vibe_on_transform = true;
 static AppTimer *s_stretch_timer;
 static int s_stretch_idx;
 static const uint32_t *s_tap_frames_normal; // tap frames for normal state
@@ -293,6 +294,11 @@ static void apply_character(void)
 }
 
 // ── Public listener registration ─────────────────────────────────────────────
+void character_set_vibe_on_transform(bool enabled)
+{
+  s_vibe_on_transform = enabled;
+}
+
 CharacterState character_get_state(void)
 {
   if (s_phase_idx < 0)
@@ -322,6 +328,8 @@ static void enter_phase(int idx); // forward declaration
 
 static void play_vibe(const uint32_t *durations, uint32_t count)
 {
+  if (!s_vibe_on_transform || battery_state_service_peek().is_plugged || quiet_time_is_active())
+    return;
   VibePattern p = {.durations = (uint32_t *)durations, .num_segments = count};
   vibes_enqueue_custom_pattern(p);
 }

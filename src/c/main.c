@@ -22,6 +22,7 @@
 #define PERSIST_KEY_STEPS_THRESHOLD       2
 #define PERSIST_KEY_VIBE_ON_BT_DISCONNECT 3
 #define PERSIST_KEY_CHARACTER             5
+#define PERSIST_KEY_VIBE_ON_TRANSFORM     6
 
 static int  s_steps_threshold      = STEPS_THRESHOLD_DEFAULT;
 static bool s_vibe_on_bt_disconnect = VIBE_ON_BT_DISCONNECT_DEFAULT;
@@ -60,6 +61,14 @@ static void inbox_received(DictionaryIterator *iter, void *ctx)
     bool is_vegeta = (t->type == TUPLE_CSTRING) ? (atoi(t->value->cstring) != 0) : (bool)t->value->int32;
     persist_write_bool(PERSIST_KEY_CHARACTER, is_vegeta);
     character_set_character(is_vegeta);
+  }
+
+  t = dict_find(iter, MESSAGE_KEY_VIBE_ON_TRANSFORM);
+  if (t)
+  {
+    bool enabled = (t->type == TUPLE_CSTRING) ? (atoi(t->value->cstring) != 0) : (bool)t->value->int32;
+    persist_write_bool(PERSIST_KEY_VIBE_ON_TRANSFORM, enabled);
+    character_set_vibe_on_transform(enabled);
   }
 }
 
@@ -212,6 +221,8 @@ static void init(void)
     s_vibe_on_bt_disconnect = persist_read_bool(PERSIST_KEY_VIBE_ON_BT_DISCONNECT);
   if (persist_exists(PERSIST_KEY_CHARACTER))
     character_set_character(persist_read_bool(PERSIST_KEY_CHARACTER));
+  if (persist_exists(PERSIST_KEY_VIBE_ON_TRANSFORM))
+    character_set_vibe_on_transform(persist_read_bool(PERSIST_KEY_VIBE_ON_TRANSFORM));
 
   app_message_register_inbox_received(inbox_received);
   app_message_open(64, 0);

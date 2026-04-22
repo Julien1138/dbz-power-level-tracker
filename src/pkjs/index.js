@@ -5,7 +5,8 @@ var STORAGE_KEY = 'dbz-settings';
 var DEFAULTS = {
   stepsThreshold:     7000,
   vibeOnBtDisconnect: true,
-  character:          0
+  character:          0,
+  vibeOnTransform:    true
 };
 
 function loadSettings() {
@@ -25,6 +26,7 @@ function sendToWatch(settings) {
   msg[messageKeys.STEPS_THRESHOLD]       = settings.stepsThreshold  | 0;
   msg[messageKeys.VIBE_ON_BT_DISCONNECT] = settings.vibeOnBtDisconnect ? 1 : 0;
   msg[messageKeys.CHARACTER]             = settings.character | 0;
+  msg[messageKeys.VIBE_ON_TRANSFORM]     = settings.vibeOnTransform ? 1 : 0;
   Pebble.sendAppMessage(
     msg,
     function()  { console.log('[DBZ] Settings sent to watch'); },

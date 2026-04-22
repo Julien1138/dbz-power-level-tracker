@@ -31,7 +31,8 @@
     "messageKeys": [
       "STEPS_THRESHOLD",
       "VIBE_ON_BT_DISCONNECT",
-      "CHARACTER"
+      "CHARACTER",
+      "VIBE_ON_TRANSFORM"
     ],
     "resources": {
       "media": [

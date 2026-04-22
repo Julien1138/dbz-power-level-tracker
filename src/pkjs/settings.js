@@ -187,6 +187,17 @@ module.exports = '<!DOCTYPE html>' +
     '      </div>' +
     '      <input class="num-input" type="number" id="stepsThreshold" min="100" max="50000" step="100">' +
     '    </div>' +
+    '    <div class="row">' +
+    '      <div class="row-info">' +
+    '        <div class="label">Vibrate on transformation</div>' +
+    '        <div class="desc">Suppressed when charging or in silent mode</div>' +
+    '      </div>' +
+    '      <label class="toggle">' +
+    '        <input type="checkbox" id="vibeOnTransform">' +
+    '        <div class="track"></div>' +
+    '        <div class="thumb"></div>' +
+    '      </label>' +
+    '    </div>' +
     '  </div>' +
     '</div>' +
 
@@ -207,7 +218,7 @@ module.exports = '<!DOCTYPE html>' +
     '</div>' +
 
     '<script>' +
-    'var defaults={stepsThreshold:7000,vibeOnBtDisconnect:true,character:0};' +
+    'var defaults={stepsThreshold:7000,vibeOnBtDisconnect:true,character:0,vibeOnTransform:true};' +
     'var settings=defaults;' +
     'try{' +
     '  var h=window.location.hash.slice(1);' +
@@ -216,6 +227,7 @@ module.exports = '<!DOCTYPE html>' +
 
     'document.getElementById("stepsThreshold").value=settings.stepsThreshold||defaults.stepsThreshold;' +
     'document.getElementById("vibeOnBtDisconnect").checked=settings.vibeOnBtDisconnect!==false;' +
+'document.getElementById("vibeOnTransform").checked=settings.vibeOnTransform!==false;' +
 
     'var s_char=settings.character||0;' +
     'document.getElementById(s_char===1?"btnVegeta":"btnGoku").classList.add("active");' +
@@ -230,7 +242,8 @@ module.exports = '<!DOCTYPE html>' +
     '  return{' +
     '    stepsThreshold:parseInt(document.getElementById("stepsThreshold").value,10)||defaults.stepsThreshold,' +
     '    vibeOnBtDisconnect:document.getElementById("vibeOnBtDisconnect").checked,' +
-    '    character:s_char' +
+    '    character:s_char,' +
+    '    vibeOnTransform:document.getElementById("vibeOnTransform").checked' +
     '  };' +
     '}' +
 
