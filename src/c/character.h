@@ -13,6 +13,7 @@ typedef void (*CharacterStateListener)(CharacterState state);
 typedef void (*CharacterPhaseListener)(int phase); // 0..PHASE_COUNT-1 during transformation
 
 void character_set_vibe_on_transform(bool enabled);
+void character_mute_vibe(void);
 void character_create(Layer *root);
 void character_set_character(bool is_vegeta);
 void character_set_super(bool super);

@@ -137,6 +137,19 @@ static void battery_handler(BatteryChargeState state)
 #endif
 }
 
+// ── Button handlers ──────────────────────────────────────────────────────────
+
+static void back_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+  if (character_get_state() == CharacterStateTransforming)
+    character_mute_vibe();
+}
+
+static void click_config_provider(void *context)
+{
+  window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
+}
+
 // ── Window ───────────────────────────────────────────────────────────────────
 
 static void window_load(Window *window)
@@ -233,6 +246,7 @@ static void init(void)
                                            .load = window_load,
                                            .unload = window_unload,
                                        });
+  window_set_click_config_provider(s_window, click_config_provider);
   window_stack_push(s_window, true);
 
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);

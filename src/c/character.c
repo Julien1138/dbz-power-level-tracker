@@ -249,6 +249,7 @@ static int s_blink_idx;
 static bool s_showing_next;
 static bool s_was_super;
 static bool s_vibe_on_transform = true;
+static bool s_vibe_muted = false;
 static AppTimer *s_stretch_timer;
 static int s_stretch_idx;
 static const uint32_t *s_tap_frames_normal; // tap frames for normal state
@@ -299,6 +300,12 @@ void character_set_vibe_on_transform(bool enabled)
   s_vibe_on_transform = enabled;
 }
 
+void character_mute_vibe(void)
+{
+  vibes_cancel();
+  s_vibe_muted = true;
+}
+
 CharacterState character_get_state(void)
 {
   if (s_phase_idx < 0)
@@ -328,7 +335,7 @@ static void enter_phase(int idx); // forward declaration
 
 static void play_vibe(const uint32_t *durations, uint32_t count)
 {
-  if (!s_vibe_on_transform || battery_state_service_peek().is_plugged || quiet_time_is_active())
+  if (!s_vibe_on_transform || s_vibe_muted || battery_state_service_peek().is_plugged || quiet_time_is_active())
     return;
   VibePattern p = {.durations = (uint32_t *)durations, .num_segments = count};
   vibes_enqueue_custom_pattern(p);
@@ -349,6 +356,7 @@ static void advance_phase(void *context)
     enter_phase(s_phase_idx);
   else
   {
+    s_vibe_muted = false;
     set_bitmap(ss_res());
     s_was_super = true;
     persist_write_int(PERSIST_KEY_SUPER, today_key());
@@ -486,6 +494,7 @@ void character_set_super(bool super)
       s_timer = NULL;
     }
     vibes_cancel();
+    s_vibe_muted = false;
     s_was_super = false;
     persist_write_int(PERSIST_KEY_SUPER, 0);
     s_phase_idx = -1;
