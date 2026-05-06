@@ -15,6 +15,7 @@ A Dragon Ball Z-themed Pebble watchface that tracks your daily step count as a p
 - Battery level indicator with color-coded bar (green / yellow / red)
 - Vibration alert when Bluetooth disconnects (configurable)
 - Bardock expressions react to character state and animations
+- Cancel vibrations with back button
 
 ## Configuration
 
