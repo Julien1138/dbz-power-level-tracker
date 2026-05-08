@@ -16,15 +16,16 @@
 #define SHOW_BARDOCK
 
 // ── Configurable settings ─────────────────────────────────────────────────────
-#define STEPS_THRESHOLD_DEFAULT       7000
+#define STEPS_THRESHOLD_DEFAULT 7000
 #define VIBE_ON_BT_DISCONNECT_DEFAULT true
 
-#define PERSIST_KEY_STEPS_THRESHOLD       2
-#define PERSIST_KEY_VIBE_ON_BT_DISCONNECT 3
-#define PERSIST_KEY_CHARACTER             5
-#define PERSIST_KEY_VIBE_ON_TRANSFORM     6
 
-static int  s_steps_threshold      = STEPS_THRESHOLD_DEFAULT;
+#define PERSIST_KEY_STEPS_THRESHOLD 2
+#define PERSIST_KEY_VIBE_ON_BT_DISCONNECT 3
+#define PERSIST_KEY_CHARACTER 5
+#define PERSIST_KEY_VIBE_ON_TRANSFORM 6
+
+static int s_steps_threshold = STEPS_THRESHOLD_DEFAULT;
 static bool s_vibe_on_bt_disconnect = VIBE_ON_BT_DISCONNECT_DEFAULT;
 
 static Window *s_window;
@@ -77,9 +78,14 @@ static void apply_bardock_expr(CharacterState state)
 {
   switch (state)
   {
-  case CharacterStateTransforming: break; // handled per-phase by on_character_phase_changed
-  case CharacterStateSuper:        bardock_set_expr(1); break;
-  case CharacterStateNormal:       bardock_set_expr(0); break;
+  case CharacterStateTransforming:
+    break; // handled per-phase by on_character_phase_changed
+  case CharacterStateSuper:
+    bardock_set_expr(1);
+    break;
+  case CharacterStateNormal:
+    bardock_set_expr(0);
+    break;
   }
 }
 
@@ -127,7 +133,10 @@ static void bt_handler(bool connected)
 
 static void tap_handler(AccelAxisType axis, int32_t direction)
 {
-  character_tap();
+  if (character_get_state() == CharacterStateTransforming)
+    character_mute_vibe();
+  else
+    character_tap();
 }
 
 static void battery_handler(BatteryChargeState state)
@@ -137,18 +146,6 @@ static void battery_handler(BatteryChargeState state)
 #endif
 }
 
-// ── Button handlers ──────────────────────────────────────────────────────────
-
-static void back_click_handler(ClickRecognizerRef recognizer, void *context)
-{
-  if (character_get_state() == CharacterStateTransforming)
-    character_mute_vibe();
-}
-
-static void click_config_provider(void *context)
-{
-  window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
-}
 
 // ── Window ───────────────────────────────────────────────────────────────────
 
@@ -246,8 +243,7 @@ static void init(void)
                                            .load = window_load,
                                            .unload = window_unload,
                                        });
-  window_set_click_config_provider(s_window, click_config_provider);
-  window_stack_push(s_window, true);
+window_stack_push(s_window, true);
 
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   accel_tap_service_subscribe(tap_handler);
